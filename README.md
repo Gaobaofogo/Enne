@@ -8,7 +8,7 @@ $ docker run -d enne:latest
 $ docker exec -it $(docker ps -a | grep enne | awk '{print $1}') /bin/bash
 ```
 
-Dentro do container, para compilar e rodar o projeto:
+Dentro ou fora do container, para compilar e rodar o projeto:
 
 ```
 $ cabal build
