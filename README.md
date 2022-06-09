@@ -14,3 +14,5 @@ Dentro ou fora do container, para compilar e rodar o projeto:
 $ cabal build
 $ cabal run enne
 ```
+
+:)
