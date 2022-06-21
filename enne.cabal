@@ -32,6 +32,7 @@ executable enne
     build-depends:
         base,
         matrix,
-        parsec
+        parsec,
+        alex
     hs-source-dirs:   app
     default-language: Haskell2010
