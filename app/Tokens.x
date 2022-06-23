@@ -10,6 +10,7 @@ import System.IO.Unsafe
 $digit = 0-9      -- digits
 $alpha = [a-zA-Z] -- alphabetic characters
 $assignment = \=
+$aritmetic_operators = [\+]
 
 -- literal types
 @types = int
@@ -30,6 +31,7 @@ tokens :-
   then                                 { \s -> Then}
   write                                { \s -> Write}
   >                                    { \s -> Greater}
+  $aritmetic_operators                 { \s -> AritmeticOperator s}
   $digit+                              { \s -> Int (read s) }
   @float_number                        { \s -> Float (read s)}
   $alpha [$alpha $digit \_ \']*        { \s -> Id s }
@@ -51,7 +53,8 @@ data Token =
   Id String |
   Int Int |
   Float Double |
-  String String
+  String String |
+  AritmeticOperator String
   deriving (Eq,Show)
 
 getTokens fn = unsafePerformIO (getTokensAux fn)
