@@ -10,7 +10,7 @@ import System.IO.Unsafe
 $digit = 0-9      -- digits
 $alpha = [a-zA-Z] -- alphabetic characters
 $assignment = \=
-$aritmetic_operators = [\+]
+$aritmetic_operators = [\+\-]
 
 -- literal types
 @types = int
