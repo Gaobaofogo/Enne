@@ -3,7 +3,7 @@ FROM haskell:latest
 WORKDIR /app
 
 RUN cabal update
-RUN cabal install matrix --lib
+RUN cabal install matrix parsec alex --lib
 
 COPY . .
 
