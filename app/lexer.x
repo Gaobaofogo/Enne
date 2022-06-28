@@ -10,8 +10,8 @@ import System.IO.Unsafe
 $digit = 0-9      -- digits
 $alpha = [a-zA-Z] -- alphabetic characters
 $assignment = \=
-$aritmetic_operators = [\+\%\-\*\/]
-$parentesis = [\(\)]
+$arithmetic_operators = [\+\%\-\*\/]
+$parenthesis = [\(\)]
 $block = [\{\}]
 
 -- literal types
@@ -31,8 +31,11 @@ tokens :-
   @types                                 { \s -> Type s}
   func                                   { \s -> Function}
   $assignment                            { \s -> Assign}
-  $parentesis                            { \s -> Parentesis s }
+  $parenthesis                            { \s -> Parenthesis s }
   $block                                 { \s -> Block s }
+  "+"                                    { \p -> Add }
+  "-"                                    { \p -> Sub }
+  "*"                                    { \p -> Mult }
   if                                     { \s -> If}
   else                                   { \s -> Else}
   for                                    { \s -> For}
@@ -40,7 +43,7 @@ tokens :-
   \>                                     { \s -> Greater}
   \<                                     { \s -> Lower}
   \=\=                                   { \s -> EqualTo}
-  $aritmetic_operators                   { \s -> AritmeticOperator s}
+  $arithmetic_operators                   { \s -> ArithmeticOperator s}
   $digit+                                { \s -> Int (read s) }
   @float_number                          { \s -> Float (read s)}
   $alpha [$alpha $digit \_ \']*          { \s -> Id s }
@@ -51,26 +54,29 @@ tokens :-
 
 -- The token type:
 data Token =
-  Colon   |
-  SemiColon |
-  Comma |
-  Assign    | 
-  If  |
-  Else |
-  For |
-  While |
-  Greater |
-  Lower |
-  EqualTo |
-  Block String |
-  Parentesis String |
-  Type String |
-  Function |
-  Id String |
-  Int Int |
-  Float Double |
-  String String |
-  AritmeticOperator String
+  Colon                     |
+  SemiColon                 |
+  Comma                     |
+  Assign                    |     
+  If                        |
+  Else                      |
+  For                       |
+  While                     |
+  Greater                   |
+  Lower                     |
+  EqualTo                   |
+  Block String              |
+  Parenthesis String         |
+  Type String               |
+  Function                  |
+  Id String                 |
+  Int Int                   |
+  Float Double              |
+  String String             |
+  Add                       |
+  Sub                       |
+  Mult                      |
+  ArithmeticOperator String
   deriving (Eq,Show)
 
 getTokens fn = unsafePerformIO (getTokensAux fn)
