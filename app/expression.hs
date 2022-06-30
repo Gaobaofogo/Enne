@@ -15,7 +15,7 @@ una_expression = literal_values
 
 literal_values :: ParsecT [Token] [(Token,Token)] IO(Token)  -- TODO
 literal_values =  do
-                    a <- intToken
+                    a <- intToken <|> floatToken <|> stringToken
                     return (a)
 
 -- literal_from_name :: ParsecT [Token] [(Token,Token)] IO(Token) -- TODO
@@ -42,17 +42,17 @@ eval_remaining n1 = do
                       op <- addToken <|> subToken <|> multToken
                       n2 <- intToken <|> floatToken <|> stringToken
                       result <- eval_remaining (eval n1 op n2)
-                      return (result) 
+                      return (result)
                     <|> return (n1)
 
-attribution :: ParsecT [Token] [(Token,Token)] IO([Token])
+attribution :: ParsecT [Token] [(Token,Token)] IO[Token]
 attribution = do
   a <- typeToken
   b <- idToken
   c <- assignToken
-  d <- literal_values
+  d <- expression
   e <- semiColonToken
-  return (a:b:c:d:e:[])
+  return [a, b, c, d, e]
 
 eval :: Token -> Token -> Token -> Token
 eval (Int x)    (Add)   (Int y)   = Int (x + y)
