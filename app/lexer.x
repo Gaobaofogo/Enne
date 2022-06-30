@@ -13,6 +13,13 @@ $assignment = \=
 $parenthesis = [\(\)]
 $block = [\{\}]
 
+$op = [\#\+\-\*]       -- operacoes
+$whitespace = [\ \t\b]
+$blockBegin = [\(\[\{]
+$blockEnd = [\)\]\}]
+$comma = [\,\"\']
+$stringCommas = [\'\,\.\;\:\=\>\<\\\/\|\!\$\%\@\&]
+
 -- literal types
 @types = int
        | float
@@ -31,7 +38,7 @@ tokens :-
   @types                                 { \s -> Type s}
   func                                   { \s -> Function}
   $assignment                            { \s -> Assign}
-  $parenthesis                            { \s -> Parenthesis s }
+  $parenthesis                           { \s -> Parenthesis s }
   $block                                 { \s -> Block s }
   "+"                                    { \p -> Add }
   "-"                                    { \p -> Sub }
@@ -47,7 +54,7 @@ tokens :-
   $digit+                                { \s -> Int (read s) }
   @float_number                          { \s -> Float (read s)}
   $alpha [$alpha $digit \_ \']*          { \s -> Id s }
-  \" $alpha [$alpha $digit ! \_ \']* \"  { \s -> String s}
+  \"+($alpha|$digit|$whitespace|$blockBegin|$blockEnd|$op|$stringCommas)+\" { \s -> String s}
 
 {
 -- Each action has type :: String -> Token

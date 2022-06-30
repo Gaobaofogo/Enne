@@ -8,12 +8,12 @@ import System.IO
 import System.IO.Unsafe
 
 
-stmts :: ParsecT [Token] [Type] IO [Token]
-stmts = do
-        first <- assign
+statements :: ParsecT [Token] [(Token,Token)] IO [Token]
+statements = do
+        first <- attribution
         next  <- remaining_stmts
         return (first ++ next) <|> (return [])
 
-remaining_stmts :: ParsecT [Token] [Type] IO [Token]
-remaining_stmts = (do a <- stmts
+remaining_stmts :: ParsecT [Token] [(Token,Token)] IO [Token]
+remaining_stmts = (do a <- statements
                       return a) <|> (return [])

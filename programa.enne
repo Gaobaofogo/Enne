@@ -1,1 +1,3 @@
 float x = 1;
+int y = 3;
+string z = "33";
