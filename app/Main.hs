@@ -11,11 +11,11 @@ import System.IO.Unsafe
 import Text.Parsec (ParseError)
 import System.Directory.Internal.Prelude (getArgs)
 
-program :: ParsecT [Token] [(Token,Token)] IO ([Token])
+program :: ParsecT [Token] [(Token,Token)] IO [Token]
 program = do
     a <- statements
     eof
-    return (a++[])
+    return a
 
 parser :: [Token] -> IO (Either ParseError [Token])
 parser tokens = runParserT program [] "Error message" tokens

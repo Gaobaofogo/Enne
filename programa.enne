@@ -1,3 +1,13 @@
-float x = 30.5 * 37;
-int y = 3;
-string z = "33";
+int x = 3 + 33 + 33 * 33;
+float y = 4;
+
+
+if () {
+    if () {
+        string baleia = "Baleia";
+    } else {
+
+    }
+} else {
+    int z = 5;
+}

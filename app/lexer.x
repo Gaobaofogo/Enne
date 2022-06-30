@@ -47,7 +47,8 @@ tokens :-
   else                                   { \s -> Else}
   for                                    { \s -> For}
   while                                  { \s -> While}
-  -- @bool                                  { \s -> Bool s }
+  (true|false)                           { \s -> Boolean s }
+  (\&\&|\|\||\!)                         { \s -> LogicalOp s}
   \>                                     { \s -> Greater}
   \<                                     { \s -> Lower}
   \=\=                                   { \s -> EqualTo}
@@ -77,10 +78,11 @@ data Token =
   Type String               |
   Function                  |
   Id String                 |
+  Boolean String            |
   Int Int                   |
   Float Double              |
   String String             |
-  -- Bool Bool                 |
+  LogicalOp String          |
   Add                       |
   Sub                       |
   Mult
