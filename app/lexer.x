@@ -10,7 +10,6 @@ import System.IO.Unsafe
 $digit = 0-9      -- digits
 $alpha = [a-zA-Z] -- alphabetic characters
 $assignment = \=
-$arithmetic_operators = [\+\%\-\*\/]
 $parenthesis = [\(\)]
 $block = [\{\}]
 
@@ -20,6 +19,7 @@ $block = [\{\}]
        | string
        | bool
 @float_number = $digit+ \. $digit+
+@bool = true | false
 
 tokens :-
 
@@ -40,10 +40,10 @@ tokens :-
   else                                   { \s -> Else}
   for                                    { \s -> For}
   while                                  { \s -> While}
+  -- @bool                                  { \s -> Bool s }
   \>                                     { \s -> Greater}
   \<                                     { \s -> Lower}
   \=\=                                   { \s -> EqualTo}
-  $arithmetic_operators                   { \s -> ArithmeticOperator s}
   $digit+                                { \s -> Int (read s) }
   @float_number                          { \s -> Float (read s)}
   $alpha [$alpha $digit \_ \']*          { \s -> Id s }
@@ -66,17 +66,17 @@ data Token =
   Lower                     |
   EqualTo                   |
   Block String              |
-  Parenthesis String         |
+  Parenthesis String        |
   Type String               |
   Function                  |
   Id String                 |
   Int Int                   |
   Float Double              |
   String String             |
+  -- Bool Bool                 |
   Add                       |
   Sub                       |
-  Mult                      |
-  ArithmeticOperator String
+  Mult
   deriving (Eq,Show)
 
 getTokens fn = unsafePerformIO (getTokensAux fn)

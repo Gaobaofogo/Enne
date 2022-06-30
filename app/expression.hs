@@ -7,36 +7,52 @@ import Text.Parsec
 import Control.Monad.IO.Class
 import System.IO.Unsafe
 
-expression :: ParsecT [Token] [Type] IO(Token)
+expression :: ParsecT [Token] [(Token,Token)] IO(Token)
 expression = try bin_expression  <|> una_expression
 
-una_expression :: ParsecT [Token] [Type] IO(Token)
-una_expression = literal_values <|> try literal_from_array <|> literal_from_name
+una_expression :: ParsecT [Token] [(Token,Token)] IO(Token)
+una_expression = literal_values
 
-literal_values :: ParsecT [Token] [Type] IO(Token)  -- TODO
+literal_values :: ParsecT [Token] [(Token,Token)] IO(Token)  -- TODO
 literal_values =  do
-                    a <- intToken <|> floatToken <|> stringToken
+                    a <- intToken
                     return (a)
 
-literal_from_name :: ParsecT [Token] [Type] IO(Token) -- TODO
-literal_from_name =  do
-                    a <- idToken
-                    s1 <- getState
-                    return (fromTypeX ( fst (symtableSearch s1 (getVariableName a) "" )))
+-- literal_from_name :: ParsecT [Token] [(Token,Token)] IO(Token) -- TODO
+-- literal_from_name =  do
+--                     a <- idToken
+--                     s1 <- getState
+--                     return (fromTypeX ( fst (symtableSearch s1 (getVariableName a) "" )))
 
-bin_expression :: ParsecT [Token] [Type] IO(Token)
+-- literal_from_array:: ParsecT [Token] [(Token,Token)] IO(Token)
+-- literal_from_array =  do
+--                     a <- idToken
+--                     b <- positionSequence
+--                     s1 <- getState
+--                     return (fromTypeX ( fst (symtableArraySearch s1 (getIndexes b []) (getVariableName a) "" ))) 
+
+bin_expression :: ParsecT [Token] [(Token,Token)] IO(Token)
 bin_expression = do
-                   n1 <- intToken <|> floatToken <|> stringToken <|> try literal_from_array <|> literal_from_name
+                   n1 <- intToken <|> floatToken <|> stringToken
                    result <- eval_remaining n1
                    return (result)
 
-eval_remaining :: Token -> ParsecT [Token] [Type] IO(Token)
+eval_remaining :: Token -> ParsecT [Token] [(Token,Token)] IO(Token)
 eval_remaining n1 = do
                       op <- addToken <|> subToken <|> multToken
-                      n2 <- intToken <|> floatToken <|> stringToken <|> try literal_from_array <|> literal_from_name
+                      n2 <- intToken <|> floatToken <|> stringToken
                       result <- eval_remaining (eval n1 op n2)
                       return (result) 
-                    <|> return (n1) 
+                    <|> return (n1)
+
+attribution :: ParsecT [Token] [(Token,Token)] IO([Token])
+attribution = do
+  a <- typeToken
+  b <- idToken
+  c <- assignToken
+  d <- literal_values
+  e <- semiColonToken
+  return (a:b:c:d:e:[])
 
 eval :: Token -> Token -> Token -> Token
 eval (Int x)    (Add)   (Int y)   = Int (x + y)
