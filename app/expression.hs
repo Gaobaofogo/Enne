@@ -44,10 +44,6 @@ eval_remaining n1 = do
                       eval_remaining (eval n1 op n2)
                     <|> return n1
 
-bool_expression :: ParsecT [Token] [(Token, Token)] IO(Token)
-bool_expression = do
-  booleanToken
-
 eval :: Token -> Token -> Token -> Token
 eval (Int x)    Add   (Int y)   = Int (x + y)
 eval (Int x)    Sub   (Int y)   = Int (x - y)

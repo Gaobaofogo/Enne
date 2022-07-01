@@ -24,6 +24,11 @@ elseToken = tokenPrim show update_pos get_token where
     get_token Else = Just Else
     get_token _    = Nothing
 
+whileToken :: ParsecT [Token] st IO Token
+whileToken = tokenPrim show update_pos get_token where
+    get_token While = Just While
+    get_token _    = Nothing
+
 -- beginToken :: ParsecT [Token] st IO Token
 -- beginToken x = tokenPrim show update_pos get_token where
 --     get_token (Block b) = if x == b then Just (Block )

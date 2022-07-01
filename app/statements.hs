@@ -12,7 +12,7 @@ import System.IO.Unsafe
 
 statements :: ParsecT [Token] [(Token,Token)] IO [Token]
 statements = do
-        first <- attribution <|> ifStatement
+        first <- attribution <|> ifStatement <|> whileStatement
         next  <- remaining_stmts
         return (first ++ next) <|> return []
 
@@ -34,18 +34,32 @@ ifStatement = do
   lp <- leftParentesisToken
   -- Precisa colocar aqui pra ler uma expressão booleana
   rp <- rightParentesisToken
-  lb <- leftBlockToken
-  stmts <- statements <|> return []
-  rb <- rightBlockToken
+  bS <- blockStatement
   eS <- elseStatement <|> return []
 
-  return ([ifT, lp, rp, lb] ++ stmts ++ [rb] ++ eS)
+  return ([ifT, lp, rp] ++ bS ++ eS)
 
 elseStatement :: ParsecT [Token] [(Token,Token)] IO[Token]
 elseStatement = do
   eT <- elseToken
+  bS <- blockStatement
+
+  return (eT : bS)
+
+whileStatement :: ParsecT [Token] [(Token,Token)] IO[Token]
+whileStatement = do
+  wT <- whileToken
+  lP <- leftParentesisToken
+--   -- Precisa colocar aqui pra ler uma expressão booleana
+  rP <- rightParentesisToken
+  bS <- blockStatement
+
+  return ([wT, lP, rP] ++ bS)
+
+blockStatement :: ParsecT [Token] [(Token,Token)] IO[Token]
+blockStatement = do
   lb <- leftBlockToken
   stmts <- statements <|> return []
   rb <- rightBlockToken
 
-  return ([eT, lb] ++ stmts ++ [rb])
+  return ([lb] ++ stmts ++ [rb])
