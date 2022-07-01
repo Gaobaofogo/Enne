@@ -36,7 +36,7 @@ tokens :-
   ";"                                    { \s -> SemiColon}
   ","                                    { \s -> Comma}
   @types                                 { \s -> Type s}
-  func                                   { \s -> Function}
+  func                                   { \s -> Func}
   $assignment                            { \s -> Assign}
   $parenthesis                           { \s -> Parenthesis s }
   $block                                 { \s -> Block s }
@@ -76,7 +76,7 @@ data Token =
   Block String              |
   Parenthesis String        |
   Type String               |
-  Function                  |
+  Func                      |
   Id String                 |
   Boolean String            |
   Int Int                   |

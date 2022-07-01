@@ -11,3 +11,7 @@ if () {
 } else {
     int z = 5;
 }
+
+func enne(int x, int y) : int {
+    int z = 37;
+}

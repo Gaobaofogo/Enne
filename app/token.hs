@@ -29,6 +29,11 @@ whileToken = tokenPrim show update_pos get_token where
     get_token While = Just While
     get_token _    = Nothing
 
+funcToken :: ParsecT [Token] st IO Token
+funcToken = tokenPrim show update_pos get_token where
+    get_token Func = Just Func
+    get_token _    = Nothing
+
 -- beginToken :: ParsecT [Token] st IO Token
 -- beginToken x = tokenPrim show update_pos get_token where
 --     get_token (Block b) = if x == b then Just (Block )
@@ -99,6 +104,16 @@ typeToken = tokenPrim show update_pos get_token where
 semiColonToken :: ParsecT [Token] u IO Token
 semiColonToken = tokenPrim show update_pos get_token where
     get_token (SemiColon) = Just (SemiColon)
+    get_token _        = Nothing
+
+colonToken :: ParsecT [Token] u IO Token
+colonToken = tokenPrim show update_pos get_token where
+    get_token (Colon) = Just (Colon)
+    get_token _        = Nothing
+
+commaToken :: ParsecT [Token] u IO Token
+commaToken = tokenPrim show update_pos get_token where
+    get_token (Comma) = Just (Comma)
     get_token _        = Nothing
 
 assignToken :: ParsecT [Token] u IO Token

@@ -12,7 +12,7 @@ import System.IO.Unsafe
 
 statements :: ParsecT [Token] [(Token,Token)] IO [Token]
 statements = do
-        first <- attribution <|> ifStatement <|> whileStatement
+        first <- attribution <|> ifStatement <|> whileStatement <|> funcStatement
         next  <- remaining_stmts
         return (first ++ next) <|> return []
 
@@ -55,6 +55,39 @@ whileStatement = do
   bS <- blockStatement
 
   return ([wT, lP, rP] ++ bS)
+
+funcStatement :: ParsecT [Token] [(Token,Token)] IO[Token]
+funcStatement = do
+  fS <- funcToken
+  iT <- idToken
+  lP <- leftParentesisToken
+  fA <- funcArgumentsStatement
+  rP <- rightParentesisToken
+  cT <- colonToken
+  tT <- typeToken
+  bS <- blockStatement
+
+  return ([fS, iT, lP] ++ fA ++ [rP, cT, tT] ++ bS)
+
+funcArgumentsStatement :: ParsecT [Token] [(Token,Token)] IO[Token]
+funcArgumentsStatement = do
+  first <- singleArgumentStatement <|> return []
+  next <- remainingFuncArgumentsStatement
+  return (first ++ next) <|> return []
+
+remainingFuncArgumentsStatement :: ParsecT [Token] [(Token,Token)] IO[Token]
+remainingFuncArgumentsStatement = ( do
+  cmT <- commaToken
+  faS <- funcArgumentsStatement
+  return (cmT:faS)
+  ) <|> return []
+
+singleArgumentStatement :: ParsecT [Token] [(Token,Token)] IO[Token]
+singleArgumentStatement = do
+  tT <- typeToken
+  iT <- idToken
+
+  return [tT, iT]
 
 blockStatement :: ParsecT [Token] [(Token,Token)] IO[Token]
 blockStatement = do
