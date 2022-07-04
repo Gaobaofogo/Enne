@@ -4,6 +4,7 @@ module Expression where
 
 import Lexer
 import Token
+import Memory
 import Text.Parsec
 
 import Control.Monad.IO.Class
@@ -13,11 +14,16 @@ expression :: ParsecT [Token] [(Token,Token)] IO(Token)
 expression = try bin_expression  <|> una_expression
 
 una_expression :: ParsecT [Token] [(Token,Token)] IO(Token)
-una_expression = literal_values
+una_expression = literal_values <|> literal_from_name
 
 literal_values :: ParsecT [Token] [(Token,Token)] IO(Token)
 literal_values =  do
                     intToken <|> floatToken <|> stringToken
+
+literal_from_name :: ParsecT [Token] [(Token,Token)] IO(Token) -- TODO
+literal_from_name = do
+  a <- idToken
+  return a
 
 -- literal_from_name :: ParsecT [Token] [(Token,Token)] IO(Token) -- TODO
 -- literal_from_name =  do
@@ -43,6 +49,23 @@ eval_remaining n1 = do
                       n2 <- intToken <|> floatToken <|> stringToken
                       eval_remaining (eval n1 op n2)
                     <|> return n1
+
+-- Checando se os tipos na atribuição são compatíveis
+areTypesCompatible :: (Token,Token) -> [(Token,Token)] -> Bool
+areTypesCompatible (Type "string", String _) _   = True
+areTypesCompatible (Type "int", Int _)      _    = True
+areTypesCompatible (Type "float", Float _)  _    = True
+areTypesCompatible (Type "float", Int _)   _     = True
+areTypesCompatible (Type "int", Float _)  _      = True
+areTypesCompatible _                     _       = False
+
+getType :: Token -> [(Token,Token)] -> Token
+getType (String _) _ = Type "string"
+getType (Int _)   _  = Type "int"
+getType (Float _) _  = Type "float"
+
+
+
 
 eval :: Token -> Token -> Token -> Token
 eval (Int x)    Add   (Int y)   = Int (x + y)

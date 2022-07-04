@@ -4,12 +4,14 @@ module Statement where
 
 import Lexer
 import Token
+import Memory
 import Text.Parsec
 import Expression
 import System.IO
 import System.IO.Unsafe
+import Control.Monad.IO.Class
 
-
+-- while/for
 statements :: ParsecT [Token] [(Token,Token)] IO [Token]
 statements = do
         first <- attribution <|> ifStatement <|> whileStatement <|> funcStatement
@@ -25,6 +27,13 @@ attribution = do
   b <- idToken
   c <- assignToken
   d <- expression
+  if areTypesCompatible(a, d) then
+    updateState(symtable_insert (b, d))
+  else fail "Os tipos não são compatíveis"
+  -- Como posso melhorar esses erros?
+
+  s <- getState
+  liftIO (print s)
   e <- semiColonToken
   return [a, b, c, d, e]
 
