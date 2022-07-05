@@ -1,9 +1,13 @@
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use camelCase" #-}
+{-# HLINT ignore "Use newtype instead of data" #-}
 module Memory where
 import Lexer
 
-
+{-https://github.com/Gaobaofogo/Enne/issues/2-}
+data MemoryCell = MemoryCell Token Token Token Token
+    deriving (Show)
+type MemoryList = [MemoryCell]
 
 symtable_insert :: (Token,Token) -> [(Token,Token)] -> [(Token,Token)]
 symtable_insert symbol []  = [symbol]

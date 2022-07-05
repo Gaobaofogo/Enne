@@ -3,6 +3,7 @@ module Main where
 import Lexer
 import Expression
 import Statement
+import Memory
 import Text.Parsec
 import Control.Monad.IO.Class
 import System.Environment
@@ -11,11 +12,11 @@ import System.IO.Unsafe
 import Text.Parsec (ParseError)
 import System.Directory.Internal.Prelude (getArgs)
 
-program :: ParsecT [Token] [(Token,Token)] IO [Token]
+program :: ParsecT [Token] MemoryList IO [Token]
 program = do
-    a <- statements
-    eof
-    return a
+  a <- statements
+  eof
+  return a
 
 parser :: [Token] -> IO (Either ParseError [Token])
 parser tokens = runParserT program [] "Error message" tokens

@@ -10,40 +10,40 @@ import Text.Parsec
 import Control.Monad.IO.Class
 import System.IO.Unsafe
 
-expression :: ParsecT [Token] [(Token,Token)] IO(Token)
+expression :: ParsecT [Token] MemoryList IO(Token)
 expression = try bin_expression  <|> una_expression
 
-una_expression :: ParsecT [Token] [(Token,Token)] IO(Token)
+una_expression :: ParsecT [Token] MemoryList IO(Token)
 una_expression = literal_values <|> literal_from_name
 
-literal_values :: ParsecT [Token] [(Token,Token)] IO(Token)
+literal_values :: ParsecT [Token] MemoryList IO(Token)
 literal_values =  do
                     intToken <|> floatToken <|> stringToken
 
-literal_from_name :: ParsecT [Token] [(Token,Token)] IO(Token) -- TODO
+literal_from_name :: ParsecT [Token] MemoryList IO(Token) -- TODO
 literal_from_name = do
   a <- idToken
   return a
 
--- literal_from_name :: ParsecT [Token] [(Token,Token)] IO(Token) -- TODO
+-- literal_from_name :: ParsecT [Token] MemoryList IO(Token) -- TODO
 -- literal_from_name =  do
 --                     a <- idToken
 --                     s1 <- getState
 --                     return (fromTypeX ( fst (symtableSearch s1 (getVariableName a) "" )))
 
--- literal_from_array:: ParsecT [Token] [(Token,Token)] IO(Token)
+-- literal_from_array:: ParsecT [Token] MemoryList IO(Token)
 -- literal_from_array =  do
 --                     a <- idToken
 --                     b <- positionSequence
 --                     s1 <- getState
 --                     return (fromTypeX ( fst (symtableArraySearch s1 (getIndexes b []) (getVariableName a) "" ))) 
 
-bin_expression :: ParsecT [Token] [(Token,Token)] IO(Token)
+bin_expression :: ParsecT [Token] MemoryList IO(Token)
 bin_expression = do
                    n1 <- intToken <|> floatToken <|> stringToken
                    eval_remaining n1
 
-eval_remaining :: Token -> ParsecT [Token] [(Token,Token)] IO(Token)
+eval_remaining :: Token -> ParsecT [Token] MemoryList IO(Token)
 eval_remaining n1 = do
                       op <- addToken <|> subToken <|> multToken
                       n2 <- intToken <|> floatToken <|> stringToken
@@ -51,21 +51,12 @@ eval_remaining n1 = do
                     <|> return n1
 
 -- Checando se os tipos na atribuição são compatíveis
-areTypesCompatible :: (Token,Token) -> [(Token,Token)] -> Bool
-areTypesCompatible (Type "string", String _) _   = True
-areTypesCompatible (Type "int", Int _)      _    = True
-areTypesCompatible (Type "float", Float _)  _    = True
-areTypesCompatible (Type "float", Int _)   _     = True
-areTypesCompatible (Type "int", Float _)  _      = True
-areTypesCompatible _                     _       = False
-
-getType :: Token -> [(Token,Token)] -> Token
-getType (String _) _ = Type "string"
-getType (Int _)   _  = Type "int"
-getType (Float _) _  = Type "float"
-
-
-
+areTypesCompatible :: (Token,Token) -> Bool
+areTypesCompatible (Type "string", Type "string")     = True
+areTypesCompatible (Type "int", Type "int")           = True
+areTypesCompatible (Type "float", Type "float")       = True
+areTypesCompatible (Type "float", Type "int")         = True
+areTypesCompatible (Type "int", Type "float")         = True
 
 eval :: Token -> Token -> Token -> Token
 eval (Int x)    Add   (Int y)   = Int (x + y)
