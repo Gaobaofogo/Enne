@@ -24,7 +24,7 @@ attribution = do
   a <- typeToken
   b <- idToken
   c <- assignToken
-  d <- expression
+  d <- expression <|> booleanToken
   e <- semiColonToken
   return [a, b, c, d, e]
 
@@ -32,12 +32,12 @@ ifStatement :: ParsecT [Token] [(Token,Token)] IO[Token]
 ifStatement = do
   ifT <- ifToken
   lp <- leftParentesisToken
-  -- Precisa colocar aqui pra ler uma expressão booleana
+  le <- logicExpression
   rp <- rightParentesisToken
   bS <- blockStatement
   eS <- elseStatement <|> return []
 
-  return ([ifT, lp, rp] ++ bS ++ eS)
+  return ([ifT, lp] ++ le ++ [rp] ++ bS ++ eS)
 
 elseStatement :: ParsecT [Token] [(Token,Token)] IO[Token]
 elseStatement = do

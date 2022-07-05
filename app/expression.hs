@@ -58,3 +58,58 @@ eval (Int x)    Add   (Float y) = Float (fromIntegral x + y)
 eval (Int x)    Sub   (Float y) = Float (fromIntegral x - y)
 eval (Int x)    Mult  (Float y) = Float (fromIntegral x * y)
 eval (String x) Add   (String y)= String (x ++ y)
+
+-- boolean expressions
+
+logicExpression :: ParsecT [Token] [(Token,Token)] IO([Token])
+logicExpression = do
+    a <- floatToken <|> intToken <|> expression <|> booleanToken
+    b <- greaterToken <|> lowerToken <|> equalToToken
+    c <- floatToken <|> intToken <|> expression <|> booleanToken
+    result <- logic_remaining (logicComparative a b c)
+    return result
+
+logic_remaining :: Bool -> ParsecT [Token] [(Token,Token)] IO([Token])
+logic_remaining bool = (do
+    a <- logicalOpToken 
+    b <- floatToken <|> intToken <|> expression <|> booleanToken
+    c <- greaterToken <|> lowerToken <|> equalToToken
+    d <- floatToken <|> intToken <|> expression <|> booleanToken
+    result <- logic_remaining  (logicOperation bool a (logicComparative b c d))
+    return (result)) <|> (return [boolToToken bool])
+
+boolToToken :: Bool -> Token 
+boolToToken True = (Boolean "true")
+boolToToken False = (Boolean "false")
+
+tokenToBool :: Token -> Bool
+tokenToBool (Boolean "true") = True
+tokenToBool (Boolean "false") = False
+
+logicOperation :: Bool -> Token -> Bool -> Bool
+logicOperation a (LogicalOp "&&") b = a && b
+logicOperation a (LogicalOp "||") b = a || b
+
+logicComparative :: Token -> Token -> Token -> Bool
+logicComparative (Int x) Greater (Int y) = x > y
+logicComparative (Float x) Greater (Float y) = x > y
+logicComparative (Int x) Greater (Float y) = fromIntegral x > y
+logicComparative (Float x) Greater (Int y) = x > fromIntegral y
+-- logicComparative (Int x) (ComparativeOp ">=") (Int y) = x >= y
+-- logicComparative (Float x) (ComparativeOp ">=") (Float y) = x >= y
+-- logicComparative (Int x) (ComparativeOp ">=") (Float y) = fromIntegral x >= y
+-- logicComparative (Float x) (ComparativeOp ">=") (Int y) = x >= fromIntegral y
+logicComparative (Int x) Lower (Int y) = x < y
+logicComparative (Float x) Lower (Float y) = x < y
+logicComparative (Int x) Lower (Float y) = fromIntegral x < y
+logicComparative (Float x) Lower (Int y) = x < fromIntegral y
+-- logicComparative (Int x) (ComparativeOp "<=") (Int y) = x <= y
+-- logicComparative (Float x) (ComparativeOp "<=") (Float y) = x <= y
+-- logicComparative (Int x) (ComparativeOp "<=") (Float y) = fromIntegral x <= y
+-- logicComparative (Float x) (ComparativeOp "<=") (Int y) = x <= fromIntegral y
+logicComparative (Int x) EqualTo (Int y) = x == y
+logicComparative (Float x) EqualTo (Float y) = x == y
+logicComparative (Int x) EqualTo (Float y) = fromIntegral x == y
+logicComparative (Float x) EqualTo (Int y) = x == fromIntegral y
+-- logicComparative (Boolean x) EqualTo (Boolean y) = stringToBool x == stringToBool y
+-- logicComparative (Boolean x) (ComparativeOp "!=") (Boolean y) = stringToBool x /= stringToBool y
