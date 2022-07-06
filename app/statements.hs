@@ -23,12 +23,13 @@ remaining_stmts = (do statements) <|> return []
 
 attribution :: ParsecT [Token] MemoryList IO[Token]
 attribution = do
-  a <- typeToken
-  b <- idToken
-  c <- assignToken
-  d <- expression
-  e <- semiColonToken
+  tT <- typeToken
+  idT <- idToken
+  aT <- assignToken
+  e <- expression
+  sT <- semiColonToken
 
+  updateState $ symtable_insert $ MemoryCell idT e tT "global"
   --if areTypesCompatible(a, d) then
   --  updateState(symtable_insert (b, d))
   --else fail "Os tipos não são compatíveis"
@@ -37,7 +38,7 @@ attribution = do
   s <- getState
   liftIO (print s)
 
-  return [a, b, c, d, e]
+  return [tT, idT, aT, e, sT]
 
 ifStatement :: ParsecT [Token] MemoryList IO[Token]
 ifStatement = do

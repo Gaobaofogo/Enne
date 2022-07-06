@@ -23,13 +23,7 @@ literal_values =  do
 literal_from_name :: ParsecT [Token] MemoryList IO(Token) -- TODO
 literal_from_name = do
   a <- idToken
-  return a
-
--- literal_from_name :: ParsecT [Token] MemoryList IO(Token) -- TODO
--- literal_from_name =  do
---                     a <- idToken
---                     s1 <- getState
---                     return (fromTypeX ( fst (symtableSearch s1 (getVariableName a) "" )))
+  get_value_cell . head . symtable_search a <$> getState
 
 -- literal_from_array:: ParsecT [Token] MemoryList IO(Token)
 -- literal_from_array =  do
@@ -40,13 +34,13 @@ literal_from_name = do
 
 bin_expression :: ParsecT [Token] MemoryList IO(Token)
 bin_expression = do
-                   n1 <- intToken <|> floatToken <|> stringToken
+                   n1 <- intToken <|> floatToken <|> stringToken <|> literal_from_name
                    eval_remaining n1
 
 eval_remaining :: Token -> ParsecT [Token] MemoryList IO(Token)
 eval_remaining n1 = do
                       op <- addToken <|> subToken <|> multToken
-                      n2 <- intToken <|> floatToken <|> stringToken
+                      n2 <- intToken <|> floatToken <|> stringToken <|> literal_from_name
                       eval_remaining (eval n1 op n2)
                     <|> return n1
 
@@ -75,7 +69,7 @@ eval (String x) Add   (String y)= String (x ++ y)
 
 -- boolean expressions
 
-logicExpression :: ParsecT [Token] [(Token,Token)] IO([Token])
+logicExpression :: ParsecT [Token] MemoryList IO([Token])
 logicExpression = do
     a <- floatToken <|> intToken <|> expression <|> booleanToken
     b <- greaterToken <|> lowerToken <|> equalToToken
@@ -83,16 +77,16 @@ logicExpression = do
     result <- logic_remaining (logicComparative a b c)
     return result
 
-logic_remaining :: Bool -> ParsecT [Token] [(Token,Token)] IO([Token])
+logic_remaining :: Bool -> ParsecT [Token] MemoryList IO([Token])
 logic_remaining bool = (do
-    a <- logicalOpToken 
+    a <- logicalOpToken
     b <- floatToken <|> intToken <|> expression <|> booleanToken
     c <- greaterToken <|> lowerToken <|> equalToToken
     d <- floatToken <|> intToken <|> expression <|> booleanToken
     result <- logic_remaining  (logicOperation bool a (logicComparative b c d))
     return (result)) <|> (return [boolToToken bool])
 
-boolToToken :: Bool -> Token 
+boolToToken :: Bool -> Token
 boolToToken True = (Boolean "true")
 boolToToken False = (Boolean "false")
 
