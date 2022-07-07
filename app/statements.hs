@@ -29,11 +29,11 @@ attribution = do
   e <- expression
   sT <- semiColonToken
 
-  s <- getState
-  if snd (symtable_search idT s) then
-    fail "Variável já existe"
-  else updateState $ symtable_insert $ MemoryCell idT e tT "global"
+  if areTypesCompatible (convertTypeToValue tT, e) then
+    updateState $ symtable_insert $ MemoryCell idT e
+  else fail "Tipos não são compatíveis"
 
+  s <- getState
   liftIO (print s)
 
   return [tT, idT, aT, e, sT]
