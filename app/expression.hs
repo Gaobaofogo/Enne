@@ -20,10 +20,14 @@ literal_values :: ParsecT [Token] MemoryList IO(Token)
 literal_values =  do
                     intToken <|> floatToken <|> stringToken
 
-literal_from_name :: ParsecT [Token] MemoryList IO(Token) -- TODO
+literal_from_name :: ParsecT [Token] MemoryList IO Token -- TODO
 literal_from_name = do
   a <- idToken
-  get_value_cell . head . symtable_search a <$> getState
+  s <- getState
+  let result = symtable_search a s
+  if snd result then
+    return $ (get_value_cell . fst) result
+  else fail "Variável não encontrada"
 
 -- literal_from_array:: ParsecT [Token] MemoryList IO(Token)
 -- literal_from_array =  do
@@ -46,11 +50,18 @@ eval_remaining n1 = do
 
 -- Checando se os tipos na atribuição são compatíveis
 areTypesCompatible :: (Token,Token) -> Bool
-areTypesCompatible (Type "string", Type "string")     = True
-areTypesCompatible (Type "int", Type "int")           = True
-areTypesCompatible (Type "float", Type "float")       = True
-areTypesCompatible (Type "float", Type "int")         = True
-areTypesCompatible (Type "int", Type "float")         = True
+areTypesCompatible (String s1, String s2)     = True
+areTypesCompatible (Int x1, Int x2)           = True
+areTypesCompatible (Float y1, Float y2)       = True
+areTypesCompatible (Float y1, Int x1)         = True
+areTypesCompatible (Int x1, Float y1)         = True
+areTypesCompatible (_,_)                      = False
+
+convertTypeToValue :: Token -> Token
+convertTypeToValue (Type "string") = String ""
+convertTypeToValue (Type "int") = Int 0
+convertTypeToValue (Type "float") = Float 0.0
+
 
 eval :: Token -> Token -> Token -> Token
 eval (Int x)    Add   (Int y)   = Int (x + y)

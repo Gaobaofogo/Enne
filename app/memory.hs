@@ -6,28 +6,28 @@ import Lexer
 
 {-
 https://github.com/Gaobaofogo/Enne/issues/2
-(name, value, type, scope)
+(name, value)
 
-Example: (Id name, String "baleia", Type "string", "global")
+Example: (Id "global.name", String "baleia")
 -}
-data MemoryCell = MemoryCell Token Token Token [Char]
+data MemoryCell = MemoryCell Token Token
     deriving (Show)
 type MemoryList = [MemoryCell]
 
 get_name_cell :: MemoryCell -> String
-get_name_cell (MemoryCell (Id x) _ _ _) = x
+get_name_cell (MemoryCell (Id x) _) = x
 
 get_value_cell :: MemoryCell -> Token
-get_value_cell (MemoryCell _ value _ _) = value
+get_value_cell (MemoryCell _ value) = value
 
 symtable_insert :: MemoryCell -> MemoryList -> MemoryList
 symtable_insert symbol []  = [symbol]
 symtable_insert symbol symtable = symtable ++ [symbol]
 
-symtable_search :: Token -> MemoryList -> MemoryList
-symtable_search symbol [] = fail "Variable not found"
+symtable_search :: Token -> MemoryList -> (MemoryCell, Bool)
+symtable_search symbol [] = (MemoryCell (Id "global.erro") (String "Erro"), False)
 symtable_search (Id id1) (memory_cell:t) =
-    if id1 == id2 then [memory_cell] else symtable_search (Id id1) t where
+    if id1 == id2 then (memory_cell,True) else symtable_search (Id id1) t where
         id2 = get_name_cell memory_cell
 
 symtable_update :: (Token,Token) -> [(Token,Token)] -> [(Token,Token)]
