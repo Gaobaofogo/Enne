@@ -24,10 +24,10 @@ symtable_insert :: MemoryCell -> MemoryList -> MemoryList
 symtable_insert symbol []  = [symbol]
 symtable_insert symbol symtable = symtable ++ [symbol]
 
-symtable_search :: Token -> MemoryList -> MemoryList
-symtable_search symbol [] = fail "Variable not found"
+symtable_search :: Token -> MemoryList -> (MemoryCell, Bool)
+symtable_search symbol [] = (MemoryCell (Id "erro") (String "Erro") (Type "string") "global", False)
 symtable_search (Id id1) (memory_cell:t) =
-    if id1 == id2 then [memory_cell] else symtable_search (Id id1) t where
+    if id1 == id2 then (memory_cell,True) else symtable_search (Id id1) t where
         id2 = get_name_cell memory_cell
 
 symtable_update :: (Token,Token) -> [(Token,Token)] -> [(Token,Token)]

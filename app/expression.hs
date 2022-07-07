@@ -20,10 +20,10 @@ literal_values :: ParsecT [Token] MemoryList IO(Token)
 literal_values =  do
                     intToken <|> floatToken <|> stringToken
 
-literal_from_name :: ParsecT [Token] MemoryList IO(Token) -- TODO
+literal_from_name :: ParsecT [Token] MemoryList IO Token -- TODO
 literal_from_name = do
   a <- idToken
-  get_value_cell . head . symtable_search a <$> getState
+  get_value_cell . fst . symtable_search a <$> getState
 
 -- literal_from_array:: ParsecT [Token] MemoryList IO(Token)
 -- literal_from_array =  do
@@ -51,6 +51,7 @@ areTypesCompatible (Type "int", Type "int")           = True
 areTypesCompatible (Type "float", Type "float")       = True
 areTypesCompatible (Type "float", Type "int")         = True
 areTypesCompatible (Type "int", Type "float")         = True
+areTypesCompatible (_,_)                              = False
 
 eval :: Token -> Token -> Token -> Token
 eval (Int x)    Add   (Int y)   = Int (x + y)

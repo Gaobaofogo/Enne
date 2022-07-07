@@ -29,13 +29,11 @@ attribution = do
   e <- expression
   sT <- semiColonToken
 
-  updateState $ symtable_insert $ MemoryCell idT e tT "global"
-  --if areTypesCompatible(a, d) then
-  --  updateState(symtable_insert (b, d))
-  --else fail "Os tipos não são compatíveis"
-  -- Como posso melhorar esses erros?
-
   s <- getState
+  if snd (symtable_search idT s) then
+    fail "Variável já existe"
+  else updateState $ symtable_insert $ MemoryCell idT e tT "global"
+
   liftIO (print s)
 
   return [tT, idT, aT, e, sT]
