@@ -1,8 +1,7 @@
 int x = 3 + 33 + 33 * 33;
 float y = 4;
-bool m = true;
 
-if (2 > 3) {
+if (2 > 3 || 4 < 5) {
     if (3 < 4) {
         string baleia = "Baleia";
     } else {
@@ -16,3 +15,6 @@ func enne(int x, int y) : int {
     int z = 37;
 }
 
+while(1 != 2) {
+
+}

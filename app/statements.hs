@@ -62,11 +62,11 @@ whileStatement :: ParsecT [Token] MemoryList IO[Token]
 whileStatement = do
   wT <- whileToken
   lP <- leftParentesisToken
---   -- Precisa colocar aqui pra ler uma expressão booleana
+  le <- logicExpression
   rP <- rightParentesisToken
   bS <- blockStatement
 
-  return ([wT, lP, rP] ++ bS)
+  return ([wT, lP] ++ le ++ [rP] ++ bS)
 
 funcStatement :: ParsecT [Token] MemoryList IO[Token]
 funcStatement = do
