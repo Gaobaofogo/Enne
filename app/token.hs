@@ -124,19 +124,34 @@ assignToken = tokenPrim show update_pos get_token where
 greaterToken :: ParsecT [Token] u IO Token
 greaterToken = tokenPrim show update_pos get_token where
     get_token (Greater) = Just (Greater)
-    get_token _        = Nothing
+    get_token _         = Nothing
+
+greaterOrEqualToken :: ParsecT [Token] u IO Token
+greaterOrEqualToken = tokenPrim show update_pos get_token where
+    get_token (GreaterOrEqual) = Just (GreaterOrEqual)
+    get_token _                = Nothing
 
 lowerToken :: ParsecT [Token] u IO Token
 lowerToken = tokenPrim show update_pos get_token where
     get_token (Lower) = Just (Lower)
     get_token _        = Nothing
 
+lowerOrEqualToken :: ParsecT [Token] u IO Token
+lowerOrEqualToken = tokenPrim show update_pos get_token where
+    get_token (LowerOrEqual) = Just (LowerOrEqual)
+    get_token _              = Nothing
+
 equalToToken :: ParsecT [Token] u IO Token
 equalToToken = tokenPrim show update_pos get_token where
     get_token (EqualTo) = Just (EqualTo)
-    get_token _        = Nothing
+    get_token _         = Nothing
+
+notEqualToToken :: ParsecT [Token] u IO Token
+notEqualToToken = tokenPrim show update_pos get_token where
+    get_token (NotEqualTo) = Just (NotEqualTo)
+    get_token _            = Nothing
 
 logicalOpToken :: ParsecT [Token] u IO Token
 logicalOpToken = tokenPrim show update_pos get_token where
     get_token (LogicalOp s) = Just (LogicalOp s)
-    get_token _        = Nothing
+    get_token _             = Nothing

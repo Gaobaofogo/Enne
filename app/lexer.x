@@ -48,10 +48,14 @@ tokens :-
   for                                    { \s -> For}
   while                                  { \s -> While}
   (true|false)                           { \s -> Boolean s }
-  (\&\&|\|\||\!)                         { \s -> LogicalOp s}
+  (\&\&|\|\|)                            { \s -> LogicalOp s}
+  \!                                     { \s -> Not}
   \>                                     { \s -> Greater}
+  \>\=                                   { \s -> GreaterOrEqual}
   \<                                     { \s -> Lower}
+  \<\=                                   { \s -> LowerOrEqual}
   \=\=                                   { \s -> EqualTo}
+  \!\=                                   { \s -> NotEqualTo}
   $digit+                                { \s -> Int (read s) }
   @float_number                          { \s -> Float (read s)}
   $alpha [$alpha $digit \_ \']*          { \s -> Id s }
@@ -71,8 +75,12 @@ data Token =
   For                       |
   While                     |
   Greater                   |
+  GreaterOrEqual            |
   Lower                     |
+  LowerOrEqual              |
   EqualTo                   |
+  NotEqualTo                |
+  Not                       |
   Block String              |
   Parenthesis String        |
   Type String               |
