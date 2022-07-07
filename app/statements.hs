@@ -29,8 +29,11 @@ attribution = do
   e <- expression
   sT <- semiColonToken
 
+  actualState <- getState
   if areTypesCompatible (convertTypeToValue tT, e) then
-    updateState $ symtable_insert $ MemoryCell idT e
+    case symtable_insert (MemoryCell idT e) actualState of
+      Left errorMsg -> fail errorMsg
+      Right newState -> updateState (const newState)
   else fail "Tipos não são compatíveis"
 
   s <- getState

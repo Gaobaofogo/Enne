@@ -20,9 +20,10 @@ get_name_cell (MemoryCell (Id x) _) = x
 get_value_cell :: MemoryCell -> Token
 get_value_cell (MemoryCell _ value) = value
 
-symtable_insert :: MemoryCell -> MemoryList -> MemoryList
-symtable_insert symbol []  = [symbol]
-symtable_insert symbol symtable = symtable ++ [symbol]
+symtable_insert :: MemoryCell -> MemoryList -> Either String MemoryList
+symtable_insert symbol []  = Right [symbol]
+symtable_insert symbol symtable = if found then Left "Variável já existe" else Right (symtable ++ [symbol]) where
+    found = snd $ symtable_search (Id (get_name_cell symbol)) symtable
 
 symtable_search :: Token -> MemoryList -> (MemoryCell, Bool)
 symtable_search symbol [] = (MemoryCell (Id "global.erro") (String "Erro"), False)
