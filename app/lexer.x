@@ -40,9 +40,10 @@ tokens :-
   $assignment                            { \s -> Assign}
   $parenthesis                           { \s -> Parenthesis s }
   $block                                 { \s -> Block s }
-  "+"                                    { \p -> Add }
-  "-"                                    { \p -> Sub }
-  "*"                                    { \p -> Mult }
+  "+"                                    { \s -> Add }
+  "-"                                    { \s -> Sub }
+  "*"                                    { \s -> Mult }
+  print                                  { \s -> Print }
   if                                     { \s -> If}
   else                                   { \s -> Else}
   for                                    { \s -> For}
@@ -70,6 +71,7 @@ data Token =
   SemiColon                 |
   Comma                     |
   Assign                    |     
+  Print                     |
   If                        |
   Else                      |
   For                       |

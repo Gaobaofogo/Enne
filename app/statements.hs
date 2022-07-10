@@ -14,7 +14,7 @@ import Control.Monad.IO.Class
 -- while/for
 statements :: ParsecT [Token] MemoryList IO [Token]
 statements = do
-  first <- attribution <|> ifStatement <|> whileStatement <|> funcStatement
+  first <- attribution <|> ifStatement <|> whileStatement <|> funcStatement <|> printStatement
   next  <- remaining_stmts
   return (first ++ next) <|> return []
 
@@ -40,6 +40,18 @@ attribution = do
   liftIO (print s)
 
   return [tT, idT, aT, e, sT]
+
+printStatement :: ParsecT [Token] MemoryList IO[Token]
+printStatement = do
+  pT <- printToken
+  lp <- leftParentesisToken
+  eX <- expression
+  rp <- rightParentesisToken
+  sT <- semiColonToken
+
+  liftIO $ putStrLn $ get_data_from_token eX
+
+  return [pT, lp, eX, rp, sT]
 
 ifStatement :: ParsecT [Token] MemoryList IO[Token]
 ifStatement = do
