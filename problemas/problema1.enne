@@ -1,0 +1,5 @@
+float x = 5;
+float y = 3;
+int c = 1;
+
+print(x*x - y + c);

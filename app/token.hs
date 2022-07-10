@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# HLINT ignore "Use camelCase" #-}
 module Token where
 
 import Lexer
@@ -9,9 +11,19 @@ import Data.Functor.Identity
 update_pos pos _ (tok:_) = pos -- needs improvement
 update_pos pos _ []      = pos
 
+get_data_from_token :: Token -> String
+get_data_from_token (Int x)    = show x
+get_data_from_token (Float y)  = show y
+get_data_from_token (String s) = filter (/='"') s
+
 idToken :: ParsecT [Token] st IO Token
 idToken = tokenPrim show update_pos get_token where
     get_token (Id x) = Just (Id x)
+    get_token _      = Nothing
+
+printToken :: ParsecT [Token] st IO Token
+printToken = tokenPrim show update_pos get_token where
+    get_token Print = Just Print
     get_token _      = Nothing
 
 ifToken :: ParsecT [Token] st IO Token
