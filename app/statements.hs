@@ -14,7 +14,7 @@ import Control.Monad.IO.Class
 -- while/for
 statements :: ParsecT [Token] MemoryList IO [Token]
 statements = do
-  first <- attribution <|> ifStatement <|> whileStatement <|> funcStatement <|> printStatement
+  first <- attribution <|> ifStatement <|> whileStatement <|> funcStatement <|> forStatement <|> printStatement
   next  <- remaining_stmts
   return (first ++ next) <|> return []
 
@@ -40,6 +40,25 @@ attribution = do
   liftIO (print s)
 
   return [tT, idT, aT, e, sT]
+
+inlineAtributtion :: ParsecT [Token] MemoryList IO[Token]
+inlineAtributtion = do
+  tT <- typeToken
+  idT <- idToken
+  aT <- assignToken
+  e <- expression
+
+  actualState <- getState
+  if areTypesCompatible (convertTypeToValue tT, e) then
+    case symtable_insert (MemoryCell idT e) actualState of
+      Left errorMsg -> fail errorMsg
+      Right newState -> updateState (const newState)
+  else fail "Tipos não são compatíveis"
+
+  s <- getState
+  liftIO (print s)
+
+  return [tT, idT, aT, e]
 
 printStatement :: ParsecT [Token] MemoryList IO[Token]
 printStatement = do
@@ -80,6 +99,20 @@ whileStatement = do
   bS <- blockStatement
 
   return ([wT, lP] ++ le ++ [rP] ++ bS)
+
+forStatement :: ParsecT [Token] MemoryList IO[Token]
+forStatement = do
+  fT <- forToken
+  lP <- leftParentesisToken
+  iS <- inlineAtributtion <|> singleArgumentStatement
+  iST <- semiColonToken
+  le <- logicExpression
+  sST <- semiColonToken
+  sS <- singleArgumentStatement
+  rP <- rightParentesisToken
+  bS <- blockStatement
+
+  return ([fT, lP] ++ iS ++ [iST] ++ le ++ [sST] ++ sS ++ [rP] ++ bS)
 
 funcStatement :: ParsecT [Token] MemoryList IO[Token]
 funcStatement = do

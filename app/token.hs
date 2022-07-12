@@ -41,6 +41,11 @@ whileToken = tokenPrim show update_pos get_token where
     get_token While = Just While
     get_token _    = Nothing
 
+forToken :: ParsecT [Token] st IO Token
+forToken = tokenPrim show update_pos get_token where
+    get_token For = Just For
+    get_token _    = Nothing
+
 funcToken :: ParsecT [Token] st IO Token
 funcToken = tokenPrim show update_pos get_token where
     get_token Func = Just Func
