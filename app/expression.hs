@@ -62,6 +62,10 @@ convertTypeToValue (Type "string") = String ""
 convertTypeToValue (Type "int") = Int 0
 convertTypeToValue (Type "float") = Float 0.0
 
+convertInputToType :: [Char] -> Token -> Token
+convertInputToType x (Type "string") = String x
+convertInputToType x (Type "float")  = Float (read x::Double)
+convertInputToType x (Type "int")    = Int (read x::Int)
 
 eval :: Token -> Token -> Token -> Token
 eval (Int x)    Add   (Int y)   = Int (x + y)
