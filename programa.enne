@@ -1,20 +1,20 @@
-int x = 3 + 33 + 33 * 33;
+--int x = 3 + 33 + 33 * 33;
 float y = 4;
+y = 1;
+--if (2 > 3 || 4 < 5) {
+--    if (3 < 4) {
+--        string baleia = "Baleia";
+--    } else {
 
-if (2 > 3 || 4 < 5) {
-    if (3 < 4) {
-        string baleia = "Baleia";
-    } else {
+--    }
+--}
 
-    }
-} else {
-    int z = 5;
-}
+--while(1 != 2) {
+--    y = 1;
+--}
 
-func enne(int x, int y) : int {
-    int e = 37;
-}
+-- y = 2;
 
-while(1 != 2) {
-
+for (int i = 0; i < 10; i = i + 1) {
+    print(i);
 }
