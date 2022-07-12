@@ -32,31 +32,32 @@ tokens :-
 
   $white+                                ;
   "--".*                                 ;
-  :                                      { \s -> Colon}
-  ";"                                    { \s -> SemiColon}
-  ","                                    { \s -> Comma}
-  @types                                 { \s -> Type s}
-  func                                   { \s -> Func}
-  $assignment                            { \s -> Assign}
+  :                                      { \s -> Colon }
+  ";"                                    { \s -> SemiColon }
+  ","                                    { \s -> Comma }
+  @types                                 { \s -> Type s }
+  func                                   { \s -> Func }
+  $assignment                            { \s -> Assign }
   $parenthesis                           { \s -> Parenthesis s }
   $block                                 { \s -> Block s }
   "+"                                    { \s -> Add }
   "-"                                    { \s -> Sub }
   "*"                                    { \s -> Mult }
   print                                  { \s -> Print }
-  if                                     { \s -> If}
-  else                                   { \s -> Else}
-  for                                    { \s -> For}
-  while                                  { \s -> While}
+  read                                   { \s -> Read }
+  if                                     { \s -> If }
+  else                                   { \s -> Else }
+  for                                    { \s -> For }
+  while                                  { \s -> While }
   (true|false)                           { \s -> Boolean s }
   (\&\&|\|\|)                            { \s -> LogicalOp s}
-  \!                                     { \s -> Not}
-  \>                                     { \s -> Greater}
-  \>\=                                   { \s -> GreaterOrEqual}
-  \<                                     { \s -> Lower}
-  \<\=                                   { \s -> LowerOrEqual}
-  \=\=                                   { \s -> EqualTo}
-  \!\=                                   { \s -> NotEqualTo}
+  \!                                     { \s -> Not }
+  \>                                     { \s -> Greater }
+  \>\=                                   { \s -> GreaterOrEqual }
+  \<                                     { \s -> Lower }
+  \<\=                                   { \s -> LowerOrEqual }
+  \=\=                                   { \s -> EqualTo }
+  \!\=                                   { \s -> NotEqualTo }
   $digit+                                { \s -> Int (read s) }
   @float_number                          { \s -> Float (read s)}
   $alpha [$alpha $digit \_ \']*          { \s -> Id s }
@@ -72,6 +73,7 @@ data Token =
   Comma                     |
   Assign                    |     
   Print                     |
+  Read                      |
   If                        |
   Else                      |
   For                       |

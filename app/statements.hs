@@ -36,7 +36,7 @@ attributionDeclaration = do
   tT <- typeToken
   idT <- idToken
   aT <- assignToken
-  e <- expression
+  e <- expression <|> readStatement
 
   actualState <- getState
   if areTypesCompatible (convertTypeToValue tT, e) then
@@ -54,7 +54,7 @@ reattribution :: ParsecT [Token] MemoryList IO[Token]
 reattribution = do
   idT <- idToken
   aT <- assignToken
-  e <- expression
+  e <- expression <|> readStatement
 
   actualState <- getState
   let var = symtable_search idT actualState
@@ -69,26 +69,6 @@ reattribution = do
 
   return [idT, aT, e]
 
-
-inlineAtributtion :: ParsecT [Token] MemoryList IO[Token]
-inlineAtributtion = do
-  tT <- typeToken
-  idT <- idToken
-  aT <- assignToken
-  e <- expression
-
-  actualState <- getState
-  if areTypesCompatible (convertTypeToValue tT, e) then
-    case symtable_insert (MemoryCell idT e) actualState of
-      Left errorMsg -> fail errorMsg
-      Right newState -> updateState (const newState)
-  else fail "Tipos não são compatíveis"
-
-  s <- getState
-  liftIO (print s)
-
-  return [tT, idT, aT, e]
-
 printStatement :: ParsecT [Token] MemoryList IO[Token]
 printStatement = do
   pT <- printToken
@@ -100,6 +80,19 @@ printStatement = do
   liftIO $ putStrLn $ get_data_from_token eX
 
   return [pT, lp, eX, rp, sT]
+
+readStatement ::  ParsecT [Token] MemoryList IO(Token)
+readStatement = do
+  rT <- readToken
+  lP <- leftParentesisToken
+  tT <- typeToken
+  rP <- rightParentesisToken
+
+  input <- liftIO getLine
+  let x = convertInputToType input tT
+
+  return $ convertInputToType input tT
+  --return [rT, lP, tT, rP, sT]
 
 ifStatement :: ParsecT [Token] MemoryList IO[Token]
 ifStatement = do
