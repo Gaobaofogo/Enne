@@ -89,8 +89,6 @@ readStatement = do
   rP <- rightParentesisToken
 
   input <- liftIO getLine
-  let x = convertInputToType input tT
-
   return $ convertInputToType input tT
   --return [rT, lP, tT, rP, sT]
 
