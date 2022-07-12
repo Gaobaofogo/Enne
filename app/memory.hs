@@ -31,11 +31,11 @@ symtable_search (Id id1) (memory_cell:t) =
     if id1 == id2 then (memory_cell,True) else symtable_search (Id id1) t where
         id2 = get_name_cell memory_cell
 
-symtable_update :: (Token,Token) -> [(Token,Token)] -> [(Token,Token)]
+symtable_update :: MemoryCell -> MemoryList -> MemoryList
 symtable_update _ [] = fail "variable not found"
-symtable_update (Id id1, v1) ((Id id2, v2):t) =
-                               if id1 == id2 then (Id id1, v1) : t
-                               else (Id id2, v2) : symtable_update (Id id1, v1) t
+symtable_update (MemoryCell (Id id1) v1) ((MemoryCell (Id id2) v2):t) =
+                                if id1 == id2 then (MemoryCell (Id id1) v1) : t
+                                else (MemoryCell (Id id2) v2) : symtable_update (MemoryCell (Id id1) v1) t
 
 symtable_remove :: (Token,Token) -> [(Token,Token)] -> [(Token,Token)]
 symtable_remove _ [] = fail "variable not found"

@@ -14,20 +14,29 @@ import Control.Monad.IO.Class
 -- while/for
 statements :: ParsecT [Token] MemoryList IO [Token]
 statements = do
-  first <- attribution <|> ifStatement <|> whileStatement <|> funcStatement <|> forStatement <|> printStatement
+  first <- attributionSemiColon <|> ifStatement <|> whileStatement <|> funcStatement <|> forStatement <|> printStatement
   next  <- remaining_stmts
   return (first ++ next) <|> return []
 
 remaining_stmts :: ParsecT [Token] MemoryList IO [Token]
 remaining_stmts = (do statements) <|> return []
 
+attributionSemiColon :: ParsecT [Token] MemoryList IO[Token]
+attributionSemiColon = do
+  aT <- attribution
+  sC <- semiColonToken
+
+  return $ aT ++[sC]
+
 attribution :: ParsecT [Token] MemoryList IO[Token]
-attribution = do
+attribution = do attributionDeclaration <|> reattribution
+
+attributionDeclaration :: ParsecT [Token] MemoryList IO[Token]
+attributionDeclaration = do
   tT <- typeToken
   idT <- idToken
   aT <- assignToken
   e <- expression
-  sT <- semiColonToken
 
   actualState <- getState
   if areTypesCompatible (convertTypeToValue tT, e) then
@@ -39,7 +48,27 @@ attribution = do
   s <- getState
   liftIO (print s)
 
-  return [tT, idT, aT, e, sT]
+  return [tT, idT, aT, e]
+
+reattribution :: ParsecT [Token] MemoryList IO[Token]
+reattribution = do
+  idT <- idToken
+  aT <- assignToken
+  e <- expression
+
+  actualState <- getState
+  let var = symtable_search idT actualState
+  let cell_var = fst var
+  let value_cell = get_value_cell cell_var
+  if areTypesCompatible (value_cell, e) && snd var then
+    updateState $ const $ symtable_update (MemoryCell idT e) actualState
+  else fail "Tipos não são compatíveis"
+
+  s <- getState
+  liftIO (print s)
+
+  return [idT, aT, e]
+
 
 inlineAtributtion :: ParsecT [Token] MemoryList IO[Token]
 inlineAtributtion = do
@@ -104,11 +133,11 @@ forStatement :: ParsecT [Token] MemoryList IO[Token]
 forStatement = do
   fT <- forToken
   lP <- leftParentesisToken
-  iS <- inlineAtributtion <|> singleArgumentStatement
+  iS <- attribution
   iST <- semiColonToken
   le <- logicExpression
   sST <- semiColonToken
-  sS <- singleArgumentStatement
+  sS <- attribution
   rP <- rightParentesisToken
   bS <- blockStatement
 
