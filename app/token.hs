@@ -16,6 +16,10 @@ get_data_from_token (Int x)    = show x
 get_data_from_token (Float y)  = show y
 get_data_from_token (String s) = filter (/='"') s
 
+tokensToInts :: [Token] -> [Int]
+tokensToInts []           = []
+tokensToInts ((Int x):xs) = x : tokensToInts xs
+
 idToken :: ParsecT [Token] st IO Token
 idToken = tokenPrim show update_pos get_token where
     get_token (Id x) = Just (Id x)
@@ -79,6 +83,16 @@ leftBlockToken = tokenPrim show update_pos get_token where
 rightBlockToken :: ParsecT [Token] st IO Token
 rightBlockToken = tokenPrim show update_pos get_token where
     get_token (Block "}") = Just (Block "}")
+    get_token _           = Nothing
+
+leftSquareBracketToken :: ParsecT [Token] st IO Token
+leftSquareBracketToken = tokenPrim show update_pos get_token where
+    get_token (Block "[") = Just (Block "[")
+    get_token _           = Nothing
+
+rightSquareBracketToken :: ParsecT [Token] st IO Token
+rightSquareBracketToken = tokenPrim show update_pos get_token where
+    get_token (Block "]") = Just (Block "]")
     get_token _           = Nothing
 
 -- language types

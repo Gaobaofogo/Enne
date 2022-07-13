@@ -2,6 +2,7 @@
 {-# HLINT ignore "Use camelCase" #-}
 module Statement where
 
+
 import Lexer
 import Token
 import Memory
@@ -29,7 +30,7 @@ attributionSemiColon = do
   return $ aT ++[sC]
 
 attribution :: ParsecT [Token] MemoryList IO[Token]
-attribution = do attributionDeclaration <|> reattribution
+attribution = try attributionDeclaration <|> reattribution <|> arrayDeclaration
 
 attributionDeclaration :: ParsecT [Token] MemoryList IO[Token]
 attributionDeclaration = do
@@ -69,6 +70,22 @@ reattribution = do
 
   return [idT, aT, e]
 
+arrayDeclaration :: ParsecT [Token] MemoryList IO[Token]
+arrayDeclaration = do
+  tT <- typeToken
+  idT <- idToken
+  bS <- bracketSequence
+
+  actualState <- getState
+  let newArray = declareMemoryArray idT tT $ tokensToInts (fst bS)
+  case symtable_insert newArray actualState of
+    Left errorMsg -> fail errorMsg
+    Right newState -> updateState (const newState)
+  s <- getState
+  liftIO (print s)
+
+  return $ [tT, idT] ++ snd bS
+
 printStatement :: ParsecT [Token] MemoryList IO[Token]
 printStatement = do
   pT <- printToken
@@ -90,7 +107,6 @@ readStatement = do
 
   input <- liftIO getLine
   return $ convertInputToType input tT
-  --return [rT, lP, tT, rP, sT]
 
 ifStatement :: ParsecT [Token] MemoryList IO[Token]
 ifStatement = do

@@ -41,6 +41,25 @@ bin_expression = do
                    n1 <- intToken <|> floatToken <|> stringToken <|> literal_from_name
                    eval_remaining n1
 
+bracketSequence :: ParsecT [Token] MemoryList IO([Token], [Token])
+bracketSequence = do
+  first <- bracketWithNumber
+  next <- remainingBracketSequence
+  let intSequence = fst first ++ fst next
+  let tokenSequence = snd first ++ snd next
+  return (intSequence, tokenSequence)
+
+remainingBracketSequence :: ParsecT [Token] MemoryList IO([Token], [Token])
+remainingBracketSequence = (do bracketSequence) <|> return ([], [])
+
+bracketWithNumber :: ParsecT [Token] MemoryList IO([Token], [Token])
+bracketWithNumber = do
+  lB <- leftSquareBracketToken
+  iT <- intToken
+  rB <- rightSquareBracketToken
+
+  return ([iT], [lB, iT, rB])
+
 eval_remaining :: Token -> ParsecT [Token] MemoryList IO(Token)
 eval_remaining n1 = do
                       op <- addToken <|> subToken <|> multToken

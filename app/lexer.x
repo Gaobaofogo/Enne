@@ -11,7 +11,7 @@ $digit = 0-9      -- digits
 $alpha = [a-zA-Z] -- alphabetic characters
 $assignment = \=
 $parenthesis = [\(\)]
-$block = [\{\}]
+$block = [\{\}\[\]]
 
 $op = [\#\+\-\*]       -- operacoes
 $whitespace = [\ \t\b]
