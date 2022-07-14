@@ -30,7 +30,7 @@ attributionSemiColon = do
   return $ aT ++[sC]
 
 attribution :: ParsecT [Token] MemoryList IO[Token]
-attribution = try attributionDeclaration <|> reattribution <|> arrayDeclaration
+attribution = try attributionDeclaration <|> try reattribution  <|> arrayAttribution <|> arrayDeclaration
 
 attributionDeclaration :: ParsecT [Token] MemoryList IO[Token]
 attributionDeclaration = do
@@ -85,6 +85,27 @@ arrayDeclaration = do
   liftIO (print s)
 
   return $ [tT, idT] ++ snd bS
+
+arrayAttribution ::ParsecT [Token] MemoryList IO[Token]
+arrayAttribution = do
+  idT <- idToken
+  bS <- bracketSequence
+  aT <- assignToken
+  e <- expression <|> readStatement
+
+  -- TODO:
+  -- Agora que eu consigo pegar o indice, eu devo buscar na memória pelo idToken,
+  -- pegar o campo de número 3 de MemoryArray que é [Int] e substituir por esse
+  -- [4, 4] que está logo abaixo
+  liftIO (print (tokensToInts (fst bS)))
+  liftIO $ print $ arrayIndex [4,4] (tokensToInts (fst bS))
+
+  return $ [idT] ++ snd bS ++ [aT, e]
+
+-- Obs.: O tamanho das duas listas deve ser igual
+arrayIndex :: [Int] -> [Int] ->  Int
+arrayIndex [] [] = 0
+arrayIndex (d:dimensions) (s:selectedBrackets) = (s * product dimensions) + arrayIndex dimensions selectedBrackets
 
 printStatement :: ParsecT [Token] MemoryList IO[Token]
 printStatement = do

@@ -12,19 +12,19 @@ Example: (Id "global.name", String "baleia")
 -}
 
 data MemoryCell = MemoryCell Token Token
-                | MemoryArray Token [Int] [Token]
+                | MemoryArray Token Token [Int] [Token]
                 deriving (Show)
 type MemoryList = [MemoryCell]
 
 declareMemoryArray :: Token -> Token -> [Int] -> MemoryCell
-declareMemoryArray id typeArray dimensions = MemoryArray id dimensions (dataArray typeArray) where
+declareMemoryArray id typeArray dimensions = MemoryArray id typeArray dimensions (dataArray typeArray) where
     dataArray (Type "int")    = replicate (product dimensions) (Int 0)
     dataArray (Type "float")  = replicate (product dimensions) (Float 0.0)
     dataArray (Type "string") = replicate (product dimensions) (String "")
 
 get_name_cell :: MemoryCell -> String
 get_name_cell (MemoryCell  (Id x) _)    = x
-get_name_cell (MemoryArray (Id x) _ _) = x
+get_name_cell (MemoryArray (Id x) _ _ _) = x
 
 get_value_cell :: MemoryCell -> Token
 get_value_cell (MemoryCell _ value) = value
