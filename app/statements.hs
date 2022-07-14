@@ -10,6 +10,7 @@ import Expression
 import System.IO
 import System.IO.Unsafe
 import Control.Monad.IO.Class
+import Control.Monad
 
 -- while/for
 statements :: ParsecT [Token] MemoryList IO [Token]
@@ -38,12 +39,14 @@ attributionDeclaration = do
   aT <- assignToken
   e <- expression <|> readStatement
 
+
   actualState <- getState
-  if areTypesCompatible (convertTypeToValue tT, e) then
-    case symtable_insert (MemoryCell idT e) actualState of
-      Left errorMsg -> fail errorMsg
-      Right newState -> updateState (const newState)
-  else fail "Tipos não são compatíveis"
+  Control.Monad.when (canOperate actualState) $
+    if areTypesCompatible (convertTypeToValue tT, e) then
+      case symtable_insert (MemoryCell idT e) actualState of
+        Left errorMsg -> fail errorMsg
+        Right newState -> updateState (const newState)
+    else fail "Tipos não são compatíveis"
 
   s <- getState
   liftIO (print s)
@@ -98,8 +101,27 @@ ifStatement = do
   lp <- leftParentesisToken
   le <- logicExpression
   rp <- rightParentesisToken
+
+
+  s1 <- getState
+  if canOperate s1 && tokenToBool (head le)
+    then updateState ( symtableUpdateFlag 1 )
+  else updateState ( symtableUpdateFlag 0)
+
   bS <- blockStatement
   eS <- elseStatement <|> return []
+
+
+
+  {-
+  -- Se a expressão for verdadeira, eu executo bS
+  --
+  ler a expressão inteira do if e o else só que só como analisador sem mudar memória.
+   
+  --
+  -- Caso contrário, executa eS.
+  -}
+
 
   return ([ifT, lp] ++ le ++ [rp] ++ bS ++ eS)
 
@@ -169,6 +191,7 @@ singleArgumentStatement = do
 
 blockStatement :: ParsecT [Token] MemoryList IO[Token]
 blockStatement = do
+
   lb <- leftBlockToken
   stmts <- statements <|> return []
   rb <- rightBlockToken
