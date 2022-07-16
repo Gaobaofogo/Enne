@@ -93,19 +93,17 @@ arrayAttribution = do
   aT <- assignToken
   e <- expression <|> readStatement
 
-  -- TODO:
-  -- Agora que eu consigo pegar o indice, eu devo buscar na memória pelo idToken,
-  -- pegar o campo de número 3 de MemoryArray que é [Int] e substituir por esse
-  -- [4, 4] que está logo abaixo
-  liftIO (print (tokensToInts (fst bS)))
-  liftIO $ print $ arrayIndex [4,4] (tokensToInts (fst bS))
+  -- TODO: Fazer a verificação se o array tá dentro do alcance do número
+  s <- getState
+  let arrayFound = symtable_search idT s
+  if snd arrayFound then
+    updateState $ symtable_update $ update_array_at_index (fst arrayFound) (fst bS) e
+  else fail "Array não existe"
+
+  s2 <- getState
+  liftIO $ print s2
 
   return $ [idT] ++ snd bS ++ [aT, e]
-
--- Obs.: O tamanho das duas listas deve ser igual
-arrayIndex :: [Int] -> [Int] ->  Int
-arrayIndex [] [] = 0
-arrayIndex (d:dimensions) (s:selectedBrackets) = (s * product dimensions) + arrayIndex dimensions selectedBrackets
 
 printStatement :: ParsecT [Token] MemoryList IO[Token]
 printStatement = do
