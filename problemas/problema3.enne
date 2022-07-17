@@ -1,5 +1,38 @@
-matrix a = [[1,2,3],[4,5,6]]
-matrix b = [[5,6],[5,8],[9,10]]
+-- Leitura de valores
 
-print(a+b)
-print(a*b)
+print("Linhas da 1a matriz");
+int tamanho1X = 0;
+    
+print("Colunas da 1a matriz");
+int tamanho1Y  = 0;
+
+print("Linhas da 2a matriz");
+int tamanho2X = 0;
+    
+print("Colunas da 2a matriz");
+int tamanho2Y  = 0;
+
+int matrizUm[tamanho1X][tamanho1Y];
+int matrizDois[tamanho2X][tamanho2Y];
+
+-- Leitura primeira matriz
+for(int i = 0; i < tamanho1X; i = i + 1) {
+    for(int j = 0; j < tamanho1Y; j = j + 1) {
+        matrizUm[i][j] = input(int);
+    }
+}
+
+-- Leitura segunda matriz
+for(int i = 0; i < tamanho1X; i = i + 1) {
+    for(int j = 0; j < tamanho1Y; j = j + 1) {
+        matrizDois[i][j] = input(int);
+    }
+}
+
+-- Output
+
+print("Soma das matrizes");
+print(matrizUm + matrizDois)
+
+print("Multiplicação das matrizes");
+print(matrizUm * matrizDois)

@@ -1,0 +1,28 @@
+-- Não realizamos passagem por refência (equivalente ao "this" no C#, então vamos atribuir externamente)
+func mdc(float n, float m) : float {
+    if(m % n == 0) {
+        return n;
+    } else {
+        if(n % m == 0) {
+            return m;
+        } else {
+            if(m > n) {
+                return mdc(n, m % n);
+            }
+        }
+    }
+
+    return 1;
+}
+
+-- Lê os números
+print("Primeiro número:");
+int enne = read(int);
+
+print("Segundo número:");
+int emme = read(int);
+
+int r = mdc(enne, emme);
+
+print("Resultado:");
+print(r);
