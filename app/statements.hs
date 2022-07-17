@@ -39,7 +39,6 @@ attributionDeclaration = do
   aT <- assignToken
   e <- expression <|> readStatement
 
-
   actualState <- getState
   Control.Monad.when (canOperate actualState) $
     if areTypesCompatible (convertTypeToValue tT, e) then
