@@ -20,6 +20,9 @@ tokensToInts :: [Token] -> [Int]
 tokensToInts []           = []
 tokensToInts ((Int x):xs) = x : tokensToInts xs
 
+get_int_from_token :: Token -> Int
+get_int_from_token (Int x) = x
+
 idToken :: ParsecT [Token] st IO Token
 idToken = tokenPrim show update_pos get_token where
     get_token (Id x) = Just (Id x)

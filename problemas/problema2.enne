@@ -1,0 +1,43 @@
+int primeiroQuarto = 0;
+int segundoQuarto = 0;
+int terceiroQuarto = 0;
+int quartoQuarto = 0;
+
+-- Lê primeiro número
+int leitura = read(int);
+
+while(leitura >= 0) {
+    -- Verifica em qual "quarto" o número pertence, isso é se ele sequer pertence a algum
+    if(leitura >= 0 && leitura <= 25) {
+        primeiroQuarto = primeiroQuarto + 1;
+    } 
+    if(leitura > 25 && leitura <= 50) {
+        segundoQuarto = segundoQuarto + 1;
+    }
+    if(leitura > 50 && leitura <= 75) {
+        terceiroQuarto = terceiroQuarto + 1;
+    }
+    if(leitura > 75 && leitura <= 100) {
+        quartoQuarto = quartoQuarto + 1;
+    }
+    -- Lê novamente o inteiro "leitura"
+    leitura = read(int);
+}
+
+-- Imprime resultados
+
+print("===================");
+print("Primeiro intervalo:");
+print(primeiroQuarto);
+
+print("===================");
+print("Segundo intervalo:");
+print(segundoQuarto);
+
+print("===================");
+print("Terceiro intervalo:");
+print(terceiroQuarto);
+
+print("===================");
+print("Quarto intervalo:");
+print(quartoQuarto);

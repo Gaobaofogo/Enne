@@ -75,3 +75,9 @@ symtable_remove _ [] = fail "variable not found"
 symtable_remove (Id id1, v1) ((Id id2, v2):t) =
                                if id1 == id2 then t
                                else (Id id2, v2) : symtable_remove (Id id1, v1) t
+
+canOperate :: MemoryList -> Bool
+canOperate ((MemoryCell (Id "enneflag") (Int x)):_) = x == 1
+
+symtableUpdateFlag :: Int -> MemoryList -> MemoryList
+symtableUpdateFlag int ((MemoryCell id value):table) = (MemoryCell (Id "enneflag") (Int int)) : table

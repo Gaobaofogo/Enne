@@ -1,0 +1,112 @@
+type rational_t(float numerador, float denominador);
+
+func mdc(float a, float b) : float
+{
+    if (a == 0) {
+        return b;
+    }
+
+    return mdc(b % a, a);
+}
+
+func toRational(float a, float b) : rational_t {
+    return rational_t(a, b);
+}
+
+func inv(rational_t rational) : rational_t {
+    return rational_t(rational.denominador, rational.numerador);
+}
+
+func neg(rational_t rational) : rational_t {
+    return rational_t(rational.numerador * -1, rational.denominador);
+}
+
+func equals(rational_t first, rational_t second) : bool {
+    return first.numerador / first.denominador == second.numerador / second.denominador;
+}
+
+func add(rational_t first, rational_t second) : rational_t {
+    float denominador = mdc(first.denominador, second.denominador);
+    denominador = (first.denominador * second.denominador) / denominador;
+
+    float numerador = first.numerador * (denominador / first.denominador) + second.numerador * (denominador / second.denominador);
+
+    return rational_t(numerador, denominador);
+}
+
+func sub(rational_t first, rational_t second) : rational_t {
+    return add(first, neg(second));
+}
+
+func mul(rational_t first, rational_t second) : rational_t {
+    float numerador = first.numerador * second.numerador;
+    float denominador = first.denominador * second.denominador;
+
+    return rational_t(numerador, denominador);
+}
+
+func div(rational_t first, rational_t second) : rational_t {
+    return mul(first, inv(second));
+}
+
+-- Lê os números
+print("Primeiro número:");
+float enne = read(float);
+
+print("Segundo número:");
+float emme = read(float);
+
+-- Impressão dos resultados
+if(emme != 0) {
+    print("Transformação em racional:");
+    rational_t numero = toRational(enne, emme);
+    print(numero.numerador);
+    print("----");
+    print(numero.denominador);
+    print("");
+
+    print("Inverso de número racional:");
+    rational_t numeroinverso = inv(numero);
+    print(numeroinverso.numerador);
+    print("----");
+    print(numeroinverso.denominador);
+    print("");
+
+    print("Negação de número racional:");
+    rational_t numeronegado = neg(numero);
+    print(numeronegado.numerador);
+    print("----");
+    print(numeronegado.denominador);
+    print("");
+
+    print("Comparação de números racionais com (4/5):");
+    rational_t comparacao = rational_t(4, 5);
+    if(equals(numero, comparacao)) {
+        print("São iguais!");
+    } else {
+        print("São diferentes!");
+    }
+    print("");
+
+    print("Adição de números racionais com (4/5):");
+    rational_t numeroadicao = add(numero, comparacao);
+    print(numeroadicao);
+    print("");
+
+    print("Subtração de números racionais com (4/5):");
+    rational_t numerosubtracao = sub(numero, comparacao);
+    print(numerosubtracao);
+    print("");
+
+    print("Multiplicação de números racionais com (4/5):");
+    rational_t numeromultiplicacao = mul(numero, comparacao);
+    print(numeromultiplicacao);
+    print("");
+
+    print("Divisão de números racionais com (4/5):");
+    rational_t numerodivisao = div(numero, comparacao);
+    print(numerodivisao);
+
+} else {
+    print("Erro! Informe um número diferente de 0.");
+}

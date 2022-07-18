@@ -12,6 +12,7 @@ import Expression
 import System.IO
 import System.IO.Unsafe
 import Control.Monad.IO.Class
+import Control.Monad
 
 -- while/for
 statements :: ParsecT [Token] MemoryList IO [Token]
@@ -41,14 +42,14 @@ attributionDeclaration = do
   e <- expression <|> readStatement
 
   actualState <- getState
-  if areTypesCompatible (convertTypeToValue tT, e) then
-    case symtable_insert (MemoryCell idT e) actualState of
-      Left errorMsg -> fail errorMsg
-      Right newState -> updateState (const newState)
-  else fail "Tipos não são compatíveis"
+  Control.Monad.when (canOperate actualState) $
+    if areTypesCompatible (convertTypeToValue tT, e) then
+      case symtable_insert (MemoryCell idT e) actualState of
+        Left errorMsg -> fail errorMsg
+        Right newState -> updateState (const newState)
+    else fail "Tipos não são compatíveis"
 
   s <- getState
-  liftIO (print s)
 
   return [tT, idT, aT, e]
 
@@ -62,12 +63,14 @@ reattribution = do
   let var = symtable_search idT actualState
   let cell_var = fst var
   let value_cell = get_value_cell cell_var
-  if areTypesCompatible (value_cell, e) && snd var then
-    updateState $ const $ symtable_update (MemoryCell idT e) actualState
-  else fail "Tipos não são compatíveis"
+
+  Control.Monad.when (canOperate actualState) $
+    if areTypesCompatible (value_cell, e) && snd var then
+      updateState $ const $ symtable_update (MemoryCell idT e) actualState
+    else fail "Tipos não são compatíveis"
 
   s <- getState
-  liftIO (print s)
+  -- liftIO (print s)
 
   return [idT, aT, e]
 
@@ -119,7 +122,10 @@ printStatement = do
   rp <- rightParentesisToken
   sT <- semiColonToken
 
-  liftIO $ putStrLn $ get_data_from_token eX
+  s <- getState
+  if canOperate s then
+    liftIO $ putStrLn $ get_data_from_token eX
+  else updateState (symtableUpdateFlag 0)
 
   return [pT, lp, eX, rp, sT]
 
@@ -130,8 +136,14 @@ readStatement = do
   tT <- typeToken
   rP <- rightParentesisToken
 
-  input <- liftIO getLine
-  return $ convertInputToType input tT
+  actualState <- getState
+  if canOperate actualState then
+    do
+      input <- liftIO getLine
+      return $ convertInputToType input tT
+  else return $ convertTypeToValue tT
+  
+  -- return [rT, lP, tT, rP]
 
 ifStatement :: ParsecT [Token] MemoryList IO[Token]
 ifStatement = do
@@ -139,27 +151,61 @@ ifStatement = do
   lp <- leftParentesisToken
   le <- logicExpression
   rp <- rightParentesisToken
+
+
+  s1 <- getState
+  let flag = head s1
+
+  if canOperate s1 && tokenToBool (le!!0)
+    then updateState ( symtableUpdateFlag 1 )
+  else updateState ( symtableUpdateFlag 0)
+
   bS <- blockStatement
   eS <- elseStatement <|> return []
+
+  updateState $ symtableUpdateFlag $ get_int_from_token $ get_value_cell flag
 
   return ([ifT, lp] ++ le ++ [rp] ++ bS ++ eS)
 
 elseStatement :: ParsecT [Token] MemoryList IO[Token]
 elseStatement = do
+  s1 <- getState
+  if canOperate s1
+    then updateState ( symtableUpdateFlag 0 )
+  else updateState ( symtableUpdateFlag 1)
   eT <- elseToken
   bS <- blockStatement
+  if canOperate s1
+    then updateState ( symtableUpdateFlag 1 )
+  else updateState ( symtableUpdateFlag 0)
 
   return (eT : bS)
 
 whileStatement :: ParsecT [Token] MemoryList IO[Token]
 whileStatement = do
+  z <- getInput
   wT <- whileToken
   lP <- leftParentesisToken
   le <- logicExpression
   rP <- rightParentesisToken
+
+  s1 <- getState
+  if tokenToBool (head le)
+    then updateState ( symtableUpdateFlag 1 )
+  else updateState ( symtableUpdateFlag 0)
+
   bS <- blockStatement
 
-  return ([wT, lP] ++ le ++ [rP] ++ bS)
+  y <- getState
+  if canOperate y then
+    do
+      setInput z
+      aaaaaa <- whileStatement
+      return ([wT, lP] ++ le ++ [rP] ++ bS)
+  else
+    do
+      updateState $ symtableUpdateFlag 1
+      return ([wT, lP] ++ le ++ [rP] ++ bS)
 
 forStatement :: ParsecT [Token] MemoryList IO[Token]
 forStatement = do
@@ -210,8 +256,13 @@ singleArgumentStatement = do
 
 blockStatement :: ParsecT [Token] MemoryList IO[Token]
 blockStatement = do
+
   lb <- leftBlockToken
   stmts <- statements <|> return []
   rb <- rightBlockToken
+  s1 <- getState
+  -- if canOperate s1
+  --   then updateState ( symtableUpdateFlag 1 )
+  -- else updateState ( symtableUpdateFlag 1 )
 
   return ([lb] ++ stmts ++ [rb])
