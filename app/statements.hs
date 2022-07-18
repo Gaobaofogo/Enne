@@ -62,9 +62,11 @@ reattribution = do
   let var = symtable_search idT actualState
   let cell_var = fst var
   let value_cell = get_value_cell cell_var
-  if areTypesCompatible (value_cell, e) && snd var then
-    updateState $ const $ symtable_update (MemoryCell idT e) actualState
-  else fail "Tipos não são compatíveis"
+
+  Control.Monad.when (canOperate actualState) $ 
+    if areTypesCompatible (value_cell, e) && snd var then
+      updateState $ const $ symtable_update (MemoryCell idT e) actualState
+    else fail "Tipos não são compatíveis"
 
   s <- getState
   liftIO (print s)
@@ -103,7 +105,7 @@ ifStatement = do
 
 
   s1 <- getState
-  if canOperate s1 && tokenToBool (head le)
+  if canOperate s1 && tokenToBool (le!!0)
     then updateState ( symtableUpdateFlag 1 )
   else updateState ( symtableUpdateFlag 0)
 
@@ -126,8 +128,15 @@ ifStatement = do
 
 elseStatement :: ParsecT [Token] MemoryList IO[Token]
 elseStatement = do
+  s1 <- getState
+  if canOperate s1
+    then updateState ( symtableUpdateFlag 0 )
+  else updateState ( symtableUpdateFlag 1)
   eT <- elseToken
   bS <- blockStatement
+  if canOperate s1
+    then updateState ( symtableUpdateFlag 1 )
+  else updateState ( symtableUpdateFlag 0)
 
   return (eT : bS)
 
@@ -137,6 +146,12 @@ whileStatement = do
   lP <- leftParentesisToken
   le <- logicExpression
   rP <- rightParentesisToken
+
+  s1 <- getState
+  if canOperate s1 && tokenToBool (head le)
+    then updateState ( symtableUpdateFlag 1 )
+  else updateState ( symtableUpdateFlag 0)
+
   bS <- blockStatement
 
   return ([wT, lP] ++ le ++ [rP] ++ bS)
@@ -194,5 +209,9 @@ blockStatement = do
   lb <- leftBlockToken
   stmts <- statements <|> return []
   rb <- rightBlockToken
+  s1 <- getState
+  if canOperate s1
+    then updateState ( symtableUpdateFlag 1 )
+  else updateState ( symtableUpdateFlag 1)
 
   return ([lb] ++ stmts ++ [rb])

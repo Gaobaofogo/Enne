@@ -15,7 +15,7 @@ import System.Directory.Internal.Prelude (getArgs)
 program :: ParsecT [Token] MemoryList IO [Token]
 program = do
   s <- getState
-  case symtable_insert (MemoryCell (Id "enneflag") (Int 0)) s of
+  case symtable_insert (MemoryCell (Id "enneflag") (Int 1)) s of
     Left err -> fail err
     Right newState -> updateState $ const newState
   a <- statements
