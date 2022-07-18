@@ -11,7 +11,7 @@ $digit = 0-9      -- digits
 $alpha = [a-zA-Z] -- alphabetic characters
 $assignment = \=
 $parenthesis = [\(\)]
-$block = [\{\}]
+$block = [\{\}\[\]]
 
 $op = [\#\+\-\*]       -- operacoes
 $whitespace = [\ \t\b]
@@ -94,10 +94,12 @@ data Token =
   Int Int                   |
   Float Double              |
   String String             |
+  Matrix Token [Int] [Token]|
   LogicalOp String          |
   Add                       |
   Sub                       |
-  Mult
+  Mult                      |
+  Null
   deriving (Eq,Show)
 
 getTokens fn = unsafePerformIO (getTokensAux fn)

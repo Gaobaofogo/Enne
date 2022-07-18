@@ -5,6 +5,7 @@ module Expression where
 import Lexer
 import Token
 import Memory
+import Matrix
 import Text.Parsec
 
 import Control.Monad.IO.Class
@@ -18,16 +19,30 @@ una_expression = literal_values <|> literal_from_name
 
 literal_values :: ParsecT [Token] MemoryList IO(Token)
 literal_values =  do
-                    intToken <|> floatToken <|> stringToken
+                    intToken <|> floatToken <|> stringToken <|> literal_from_array
 
-literal_from_name :: ParsecT [Token] MemoryList IO Token -- TODO
+literal_from_name :: ParsecT [Token] MemoryList IO Token
 literal_from_name = do
   a <- idToken
   s <- getState
   let result = symtable_search a s
   if snd result then
-    return $ (get_value_cell . fst) result
+    return $ case fst result of
+                MemoryCell id1 value -> value
+                MemoryArray id2 t2 d2 arr2 -> Matrix t2 d2 arr2
   else fail "Variável não encontrada"
+  -- if snd result then
+  --   return $ (get_value_cell . fst) result
+  -- else fail "Variável não encontrada"
+
+literal_from_array :: ParsecT [Token] MemoryList IO Token
+literal_from_array = do
+  idT <- idToken
+  s <- getState
+
+  case symtable_search_array idT s of
+    Left err -> fail "err"
+    Right (MemoryArray id typeArr dim arr) -> return $ Matrix typeArr dim arr
 
 -- literal_from_array:: ParsecT [Token] MemoryList IO(Token)
 -- literal_from_array =  do
@@ -40,6 +55,25 @@ bin_expression :: ParsecT [Token] MemoryList IO(Token)
 bin_expression = do
                    n1 <- intToken <|> floatToken <|> stringToken <|> literal_from_name
                    eval_remaining n1
+
+bracketSequence :: ParsecT [Token] MemoryList IO([Token], [Token])
+bracketSequence = do
+  first <- bracketWithNumber
+  next <- remainingBracketSequence
+  let intSequence = fst first ++ fst next
+  let tokenSequence = snd first ++ snd next
+  return (intSequence, tokenSequence)
+
+remainingBracketSequence :: ParsecT [Token] MemoryList IO([Token], [Token])
+remainingBracketSequence = (do bracketSequence) <|> return ([], [])
+
+bracketWithNumber :: ParsecT [Token] MemoryList IO([Token], [Token])
+bracketWithNumber = do
+  lB <- leftSquareBracketToken
+  iT <- intToken
+  rB <- rightSquareBracketToken
+
+  return ([iT], [lB, iT, rB])
 
 eval_remaining :: Token -> ParsecT [Token] MemoryList IO(Token)
 eval_remaining n1 = do
@@ -81,6 +115,18 @@ eval (Int x)    Add   (Float y) = Float (fromIntegral x + y)
 eval (Int x)    Sub   (Float y) = Float (fromIntegral x - y)
 eval (Int x)    Mult  (Float y) = Float (fromIntegral x * y)
 eval (String x) Add   (String y)= String (x ++ y)
+eval (Matrix t1 dim1 arr1) Add (Matrix t2 dim2 arr2) = Matrix t1 dim1 (array_sum arr1 arr2)
+
+{-
+Aqui eu posso colocar no eval mais uma linha e retornar um 
+"token" de matrix, mas não faz sentido ser um token de matrix.
+Como eu vou saber que eu tô fazendo soma de matrizes? Porra.
+Tá, talvez eu possa colocar um token novo de matrix com as
+dimensoes e os valores. O que vai dar? Eu vou ter dois
+literal_from_array e literal_from_array_index.
+O primeiro vai devolver o valor da matrix acima descrito
+e o segundo eu vou pegar o valor no índice igual o timbux.
+-}
 
 -- boolean expressions
 

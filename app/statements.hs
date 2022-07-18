@@ -2,9 +2,11 @@
 {-# HLINT ignore "Use camelCase" #-}
 module Statement where
 
+
 import Lexer
 import Token
 import Memory
+import Matrix
 import Text.Parsec
 import Expression
 import System.IO
@@ -30,7 +32,7 @@ attributionSemiColon = do
   return $ aT ++[sC]
 
 attribution :: ParsecT [Token] MemoryList IO[Token]
-attribution = do attributionDeclaration <|> reattribution
+attribution = try attributionDeclaration <|> try reattribution  <|> arrayAttribution <|> arrayDeclaration
 
 attributionDeclaration :: ParsecT [Token] MemoryList IO[Token]
 attributionDeclaration = do
@@ -71,6 +73,46 @@ reattribution = do
   -- liftIO (print s)
 
   return [idT, aT, e]
+
+arrayDeclaration :: ParsecT [Token] MemoryList IO[Token]
+arrayDeclaration = do
+  tT <- typeToken
+  idT <- idToken
+  bS <- bracketSequence
+  aT <- assignToken <|> return Null
+  e <- expression <|> return Null
+
+  -- Estou assumindo que a expressão é uma matrix tbm. COmo eu faço?????
+  actualState <- getState
+  let newArray = asdf e idT tT $ fst bS
+  case symtable_insert newArray actualState of
+    Left errorMsg -> fail errorMsg
+    Right newState -> updateState (const newState)
+  
+  s <- getState
+  liftIO (print s)
+
+  return $ [tT, idT] ++ snd bS
+
+asdf :: Token -> Token -> Token -> [Token] -> MemoryCell
+asdf Null idT tT bS             = declareMemoryArray idT tT $ tokensToInts bS
+asdf (Matrix t dim arr) idT _ _ = MemoryArray idT t dim arr
+
+arrayAttribution ::ParsecT [Token] MemoryList IO[Token]
+arrayAttribution = do
+  idT <- idToken
+  bS <- bracketSequence
+  aT <- assignToken
+  e <- expression <|> readStatement
+
+  -- TODO: Fazer a verificação se o array tá dentro do alcance do número
+  s <- getState
+  let arrayFound = symtable_search idT s
+  if snd arrayFound then
+    updateState $ symtable_update $ update_array_at_index (fst arrayFound) (fst bS) e
+  else fail "Array não existe"
+
+  return $ [idT] ++ snd bS ++ [aT, e]
 
 printStatement :: ParsecT [Token] MemoryList IO[Token]
 printStatement = do
