@@ -7,7 +7,6 @@ import Token
 
 {-
 https://github.com/Gaobaofogo/Enne/issues/2
-(name, value)
 
 Example: (Id "global.name", String "baleia")
 -}
@@ -28,7 +27,7 @@ get_name_cell (MemoryCell  (Id x) _)    = x
 get_name_cell (MemoryArray (Id x) _ _ _) = x
 
 get_value_cell :: MemoryCell -> Token
-get_value_cell (MemoryCell _ value) = value
+get_value_cell (MemoryCell _ value) = value -- memory cell é definida por -> (name, value)
 
 get_id_array :: MemoryCell -> Token
 get_id_array (MemoryArray id _ _ _) = id
@@ -62,7 +61,7 @@ symtable_search_array (Id id1) ((MemoryArray (Id id2) t d arrValue):arr) =
 symtable_update :: MemoryCell -> MemoryList -> MemoryList
 symtable_update _ [] = fail "variable not found"
 symtable_update (MemoryCell (Id id1) v1) ((MemoryCell (Id id2) v2):t) =
-                                if id1 == id2 then (MemoryCell (Id id1) v1) : t
+                                if id1 == id2 then MemoryCell (Id id1) v1 : t
                                 else (MemoryCell (Id id2) v2) : symtable_update (MemoryCell (Id id1) v1) t
 symtable_update (MemoryArray (Id id1) t1 d1 arr1) ((MemoryArray (Id id2) t2 d2 arr2):t) =
                                 if id1 == id2 then (MemoryArray (Id id1) t1 d1 arr1) : t
