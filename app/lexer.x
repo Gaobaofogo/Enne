@@ -94,10 +94,12 @@ data Token =
   Int Int                   |
   Float Double              |
   String String             |
+  Matrix Token [Int] [Token]|
   LogicalOp String          |
   Add                       |
   Sub                       |
-  Mult
+  Mult                      |
+  Null
   deriving (Eq,Show)
 
 getTokens fn = unsafePerformIO (getTokensAux fn)
