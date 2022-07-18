@@ -6,6 +6,7 @@ module Statement where
 import Lexer
 import Token
 import Memory
+import Matrix
 import Text.Parsec
 import Expression
 import System.IO
@@ -75,16 +76,24 @@ arrayDeclaration = do
   tT <- typeToken
   idT <- idToken
   bS <- bracketSequence
+  aT <- assignToken <|> return Null
+  e <- expression <|> return Null
 
+  -- Estou assumindo que a expressão é uma matrix tbm. COmo eu faço?????
   actualState <- getState
-  let newArray = declareMemoryArray idT tT $ tokensToInts (fst bS)
+  let newArray = asdf e idT tT $ fst bS
   case symtable_insert newArray actualState of
     Left errorMsg -> fail errorMsg
     Right newState -> updateState (const newState)
+  
   s <- getState
   liftIO (print s)
 
   return $ [tT, idT] ++ snd bS
+
+asdf :: Token -> Token -> Token -> [Token] -> MemoryCell
+asdf Null idT tT bS             = declareMemoryArray idT tT $ tokensToInts bS
+asdf (Matrix t dim arr) idT _ _ = MemoryArray idT t dim arr
 
 arrayAttribution ::ParsecT [Token] MemoryList IO[Token]
 arrayAttribution = do
@@ -99,9 +108,6 @@ arrayAttribution = do
   if snd arrayFound then
     updateState $ symtable_update $ update_array_at_index (fst arrayFound) (fst bS) e
   else fail "Array não existe"
-
-  s2 <- getState
-  liftIO $ print s2
 
   return $ [idT] ++ snd bS ++ [aT, e]
 

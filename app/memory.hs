@@ -42,22 +42,6 @@ get_dimensions_array (MemoryArray _ _ dimensions _) = dimensions
 get_data_array :: MemoryCell -> [Token]
 get_data_array (MemoryArray _ _ _ data_array) = data_array
 
-update_array_at_index :: MemoryCell -> [Token] -> Token -> MemoryCell
-update_array_at_index arrayFound bS e = MemoryArray (get_id_array arrayFound) (get_type_array arrayFound) (get_dimensions_array arrayFound) newArray where
-  index    = arrayIndex (get_dimensions_array arrayFound) (tokensToInts bS)
-  newArray = arrayReplace (get_data_array arrayFound) index e
-  
-
--- Obs.: O tamanho das duas listas deve ser igual
-arrayIndex :: [Int] -> [Int] ->  Int
-arrayIndex [] [] = 0
-arrayIndex (d:dimensions) (s:selectedBrackets) = (s * product dimensions) + arrayIndex dimensions selectedBrackets
-
--- A função abaixo não verifica se a posição está dentro do tamanho do array
-arrayReplace :: [a] -> Int -> a -> [a]
-arrayReplace (x:xs) 0 y   = y : xs
-arrayReplace (x:xs) pos y = x : arrayReplace xs (pos - 1) y
-
 symtable_insert :: MemoryCell -> MemoryList -> Either String MemoryList
 symtable_insert symbol []  = Right [symbol]
 symtable_insert symbol symtable = if found then Left "Variável já existe" else Right (symtable ++ [symbol]) where
@@ -68,6 +52,12 @@ symtable_search symbol [] = (MemoryCell (Id "global.erro") (String "Erro"), Fals
 symtable_search (Id id1) (memory_cell:t) =
     if id1 == id2 then (memory_cell,True) else symtable_search (Id id1) t where
         id2 = get_name_cell memory_cell
+
+symtable_search_array :: Token -> MemoryList -> Either String MemoryCell
+symtable_search_array _ []                           = Left "Variável não existe"
+symtable_search_array id ((MemoryCell _ _):arr)      = symtable_search_array id arr
+symtable_search_array (Id id1) ((MemoryArray (Id id2) t d arrValue):arr) =
+    if id1 == id2 then Right (MemoryArray (Id id2) t d arrValue) else symtable_search_array (Id id1) arr
 
 symtable_update :: MemoryCell -> MemoryList -> MemoryList
 symtable_update _ [] = fail "variable not found"
