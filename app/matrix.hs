@@ -34,3 +34,8 @@ arrayIndex (d:dimensions) (s:selectedBrackets) = (s * product dimensions) + arra
 arrayReplace :: [a] -> Int -> a -> [a]
 arrayReplace (x:xs) 0 y   = y : xs
 arrayReplace (x:xs) pos y = x : arrayReplace xs (pos - 1) y
+
+-- Verifica se a matriz é vazia. Caso seja, preenche a matriz com valores padroes.
+isArrayEmpty :: Token -> Token -> Token -> [Token] -> MemoryCell
+isArrayEmpty Null idT tT bS             = declareMemoryArray idT tT $ tokensToInts bS
+isArrayEmpty (Matrix t dim arr) idT _ _ = MemoryArray idT t dim arr

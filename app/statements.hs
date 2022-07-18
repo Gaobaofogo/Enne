@@ -14,7 +14,6 @@ import System.IO.Unsafe
 import Control.Monad.IO.Class
 import Control.Monad
 
--- while/for
 statements :: ParsecT [Token] MemoryList IO [Token]
 statements = do
   first <- attributionSemiColon <|> ifStatement <|> whileStatement <|> funcStatement <|> forStatement <|> printStatement
@@ -69,9 +68,6 @@ reattribution = do
       updateState $ const $ symtable_update (MemoryCell idT e) actualState
     else fail "Tipos não são compatíveis"
 
-  s <- getState
-  -- liftIO (print s)
-
   return [idT, aT, e]
 
 arrayDeclaration :: ParsecT [Token] MemoryList IO[Token]
@@ -82,21 +78,16 @@ arrayDeclaration = do
   aT <- assignToken <|> return Null
   e <- expression <|> return Null
 
-  -- Estou assumindo que a expressão é uma matrix tbm. COmo eu faço?????
   actualState <- getState
-  let newArray = asdf e idT tT $ fst bS
+  let newArray = isArrayEmpty e idT tT $ fst bS
   case symtable_insert newArray actualState of
     Left errorMsg -> fail errorMsg
     Right newState -> updateState (const newState)
-  
+
   s <- getState
   liftIO (print s)
 
   return $ [tT, idT] ++ snd bS
-
-asdf :: Token -> Token -> Token -> [Token] -> MemoryCell
-asdf Null idT tT bS             = declareMemoryArray idT tT $ tokensToInts bS
-asdf (Matrix t dim arr) idT _ _ = MemoryArray idT t dim arr
 
 arrayAttribution ::ParsecT [Token] MemoryList IO[Token]
 arrayAttribution = do
@@ -142,8 +133,6 @@ readStatement = do
       input <- liftIO getLine
       return $ convertInputToType input tT
   else return $ convertTypeToValue tT
-  
-  -- return [rT, lP, tT, rP]
 
 ifStatement :: ParsecT [Token] MemoryList IO[Token]
 ifStatement = do
@@ -156,7 +145,7 @@ ifStatement = do
   s1 <- getState
   let flag = head s1
 
-  if canOperate s1 && tokenToBool (le!!0)
+  if canOperate s1 && tokenToBool (head le)
     then updateState ( symtableUpdateFlag 1 )
   else updateState ( symtableUpdateFlag 0)
 
@@ -238,12 +227,14 @@ funcArgumentsStatement :: ParsecT [Token] MemoryList IO[Token]
 funcArgumentsStatement = do
   first <- singleArgumentStatement <|> return []
   next <- remainingFuncArgumentsStatement
+  
   return (first ++ next) <|> return []
 
 remainingFuncArgumentsStatement :: ParsecT [Token] MemoryList IO[Token]
 remainingFuncArgumentsStatement = ( do
   cmT <- commaToken
   faS <- funcArgumentsStatement
+
   return (cmT:faS)
   ) <|> return []
 
@@ -261,8 +252,5 @@ blockStatement = do
   stmts <- statements <|> return []
   rb <- rightBlockToken
   s1 <- getState
-  -- if canOperate s1
-  --   then updateState ( symtableUpdateFlag 1 )
-  -- else updateState ( symtableUpdateFlag 1 )
 
   return ([lb] ++ stmts ++ [rb])

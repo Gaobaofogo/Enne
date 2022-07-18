@@ -9,7 +9,6 @@ import Control.Monad.IO.Class
 import System.Environment
 
 import System.IO.Unsafe
-import Text.Parsec (ParseError)
 import System.Directory.Internal.Prelude (getArgs)
 
 program :: ParsecT [Token] MemoryList IO [Token]
@@ -23,7 +22,7 @@ program = do
   return a
 
 parser :: [Token] -> IO (Either ParseError [Token])
-parser tokens = runParserT program [] "Error message" tokens
+parser = runParserT program [] "Error message"
 
 main :: IO ()
 main =

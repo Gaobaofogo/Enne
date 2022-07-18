@@ -6,11 +6,6 @@ import Lexer
 import Text.Parsec
 import Data.Functor.Identity
 
--- general statements programing
--- update_pos :: SourcePos -> Token -> [Token] -> SourcePos
-update_pos pos _ (tok:_) = pos -- needs improvement
-update_pos pos _ []      = pos
-
 get_data_from_token :: Token -> String
 get_data_from_token (Int x)    = show x
 get_data_from_token (Float y)  = show y
@@ -63,11 +58,6 @@ funcToken = tokenPrim show update_pos get_token where
     get_token Func = Just Func
     get_token _    = Nothing
 
--- beginToken :: ParsecT [Token] st IO Token
--- beginToken x = tokenPrim show update_pos get_token where
---     get_token (Block b) = if x == b then Just (Block )
---     get_token _        = Nothing
-
 leftParentesisToken :: ParsecT [Token] st IO Token
 leftParentesisToken = tokenPrim show update_pos get_token where
     get_token (Parenthesis "(") = Just (Parenthesis "(")
@@ -98,8 +88,6 @@ rightSquareBracketToken = tokenPrim show update_pos get_token where
     get_token (Block "]") = Just (Block "]")
     get_token _           = Nothing
 
--- language types
--- floatToken :: ParsecT [Token] st Data.Functor.Identity.Identity Token
 floatToken :: ParsecT [Token] st IO (Token)
 floatToken = tokenPrim show update_pos get_token where
     get_token (Float x) = Just (Float x)
