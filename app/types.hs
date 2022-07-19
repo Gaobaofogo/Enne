@@ -1,4 +1,3 @@
-import Data.Matrix
 
 -- Falta colocar um valor para receber um Matrix
 data BuiltinTypes = BTI Integer

@@ -10,9 +10,15 @@ import System.IO.Unsafe
 $digit = 0-9      -- digits
 $alpha = [a-zA-Z] -- alphabetic characters
 $assignment = \=
-$aritmetic_operators = [\+\%\-\*\/]
-$parentesis = [\(\)]
-$block = [\{\}]
+$parenthesis = [\(\)]
+$block = [\{\}\[\]]
+
+$op = [\#\+\-\*]       -- operacoes
+$whitespace = [\ \t\b]
+$blockBegin = [\(\[\{]
+$blockEnd = [\)\]\}]
+$comma = [\,\"\']
+$stringCommas = [\'\,\.\;\:\=\>\<\\\/\|\!\$\%\@\&]
 
 -- literal types
 @types = int
@@ -20,57 +26,82 @@ $block = [\{\}]
        | string
        | bool
 @float_number = $digit+ \. $digit+
+@bool = true | false
 
 tokens :-
 
   $white+                                ;
   "--".*                                 ;
-  :                                      { \s -> Colon}
-  ";"                                    { \s -> SemiColon}
-  ","                                    { \s -> Comma}
-  @types                                 { \s -> Type s}
-  func                                   { \s -> Function}
-  $assignment                            { \s -> Assign}
-  $parentesis                            { \s -> Parentesis s }
+  :                                      { \s -> Colon }
+  ";"                                    { \s -> SemiColon }
+  ","                                    { \s -> Comma }
+  @types                                 { \s -> Type s }
+  func                                   { \s -> Func }
+  $assignment                            { \s -> Assign }
+  $parenthesis                           { \s -> Parenthesis s }
   $block                                 { \s -> Block s }
-  if                                     { \s -> If}
-  else                                   { \s -> Else}
-  for                                    { \s -> For}
-  while                                  { \s -> While}
-  \>                                     { \s -> Greater}
-  \<                                     { \s -> Lower}
-  \=\=                                   { \s -> EqualTo}
-  $aritmetic_operators                   { \s -> AritmeticOperator s}
+  "+"                                    { \s -> Add }
+  "-"                                    { \s -> Sub }
+  "*"                                    { \s -> Mult }
+  print                                  { \s -> Print }
+  println                                { \s -> Println }
+  read                                   { \s -> Read }
+  if                                     { \s -> If }
+  else                                   { \s -> Else }
+  for                                    { \s -> For }
+  while                                  { \s -> While }
+  (true|false)                           { \s -> Boolean s }
+  (\&\&|\|\|)                            { \s -> LogicalOp s}
+  \!                                     { \s -> Not }
+  \>                                     { \s -> Greater }
+  \>\=                                   { \s -> GreaterOrEqual }
+  \<                                     { \s -> Lower }
+  \<\=                                   { \s -> LowerOrEqual }
+  \=\=                                   { \s -> EqualTo }
+  \!\=                                   { \s -> NotEqualTo }
   $digit+                                { \s -> Int (read s) }
   @float_number                          { \s -> Float (read s)}
   $alpha [$alpha $digit \_ \']*          { \s -> Id s }
-  \" $alpha [$alpha $digit ! \_ \']* \"  { \s -> String s}
+  \"+($alpha|$digit|$whitespace|$blockBegin|$blockEnd|$op|$stringCommas)+\" { \s -> String s}
 
 {
 -- Each action has type :: String -> Token
 
 -- The token type:
 data Token =
-  Colon   |
-  SemiColon |
-  Comma |
-  Assign    | 
-  If  |
-  Else |
-  For |
-  While |
-  Greater |
-  Lower |
-  EqualTo |
-  Block String |
-  Parentesis String |
-  Type String |
-  Function |
-  Id String |
-  Int Int |
-  Float Double |
-  String String |
-  AritmeticOperator String
+  Colon                     |
+  SemiColon                 |
+  Comma                     |
+  Assign                    |     
+  Print                     |
+  Println                   |
+  Read                      |
+  If                        |
+  Else                      |
+  For                       |
+  While                     |
+  Greater                   |
+  GreaterOrEqual            |
+  Lower                     |
+  LowerOrEqual              |
+  EqualTo                   |
+  NotEqualTo                |
+  Not                       |
+  Block String              |
+  Parenthesis String        |
+  Type String               |
+  Func                      |
+  Id String                 |
+  Boolean String            |
+  Int Int                   |
+  Float Double              |
+  String String             |
+  Matrix Token [Int] [Token]|
+  LogicalOp String          |
+  Add                       |
+  Sub                       |
+  Mult                      |
+  Null
   deriving (Eq,Show)
 
 getTokens fn = unsafePerformIO (getTokensAux fn)

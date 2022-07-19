@@ -1,0 +1,72 @@
+-- Leitura de valores
+println("Linhas da 1a matriz");
+int tamanho1Linha = read(int);
+    
+println("Colunas da 1a matriz");
+int tamanho1Coluna = read(int);
+
+println("Linhas da 2a matriz");
+int tamanho2Linha = read(int);
+    
+println("Colunas da 2a matriz");
+int tamanho2Coluna  = read(int);
+
+int matrizUm[tamanho1Linha][tamanho1Coluna];
+int matrizDois[tamanho2Linha][tamanho2Coluna];
+
+-- Leitura primeira matriz
+int i = 0;
+int j = 0;
+int k = 0;
+
+for(i = 0; i < tamanho1Linha; i = i + 1) {
+    for(j = 0; j < tamanho1Coluna; j = j + 1) {
+        matrizUm[i][j] = read(int);
+    }
+}
+
+-- Leitura segunda matriz
+for(i = 0; i < tamanho1Linha; i = i + 1) {
+    for(j = 0; j < tamanho1Coluna; j = j + 1) {
+        matrizDois[i][j] = read(int);
+    }
+}
+
+-- Output
+if(tamanho1Linha == tamanho2Linha && tamanho1Coluna == tamanho2Coluna) {
+    println("Soma das matrizes");
+
+    for(i = 0; i < tamanho1Linha; i = i + 1) {
+        for(j = 0; j < tamanho1Coluna; j = j + 1) {
+            println(matrizUm[i][j] + matrizDois[i][j]);
+        }
+    }
+} else {
+    println("As matrizes informadas nao podem ser somadas. Tente novamente com duas matrizes do mesmo tamanho.");
+}
+
+if(tamanho1Coluna == tamanho2Linha) {
+    int matrizMultiplicacao[tamanho1Linha][tamanho2Coluna];
+
+    i = 0;
+    j = 0;
+
+    -- Realiza a multiplicação
+    println("Multiplicacao das matrizes");
+    for(i = 0; i < tamanho1Linha; i = i + 1) {
+        for(j = 0; j < tamanho2Coluna; j = j + 1) {
+            matrizMultiplicacao[i][j] = 0;
+            for(k = 0; k < tamanho2Linha; k = k + 1) {
+                print("novaMatriz[");
+                print(i);
+                print("][");
+                print(j);
+                print("] = ");
+                print(matrizUm[i][k] * matrizDois[k][j] + matrizMultiplicacao[i][j]);
+                println(" ");
+            }
+        }
+    }
+} else {
+    println("As matrizes informadas nao podem ser multiplicadas. Tente novamente com duas matrizes do a coluna da primeira sendo igual a linha da segunda.");
+}

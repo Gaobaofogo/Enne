@@ -13,10 +13,8 @@ $ docker exec -it $(docker ps -a | grep enne | awk '{print $1}') /bin/bash
 Dentro do container, para compilar e rodar o projeto a partir da raiz:
 
 ```
-$ cd app
-$ alex lexer.x
-$ ghc Main.hs
-$ ./main
+$ make
+$ ./main <nome_do_arquivo>.enne
 ```
 
 Caso não esteja dentro do container, é recomendado usar os passos de instalação a seguir:
