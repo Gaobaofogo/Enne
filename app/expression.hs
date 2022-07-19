@@ -12,14 +12,14 @@ import Control.Monad.IO.Class
 import System.IO.Unsafe
 
 expression :: ParsecT [Token] MemoryList IO(Token)
-expression = try bin_expression  <|> una_expression
+expression = try bin_expression  <|> try una_expression
 
 una_expression :: ParsecT [Token] MemoryList IO(Token)
-una_expression = literal_values <|> literal_from_name
+una_expression = try literal_values <|> try literal_from_array_at_index <|> try literal_from_name
 
 literal_values :: ParsecT [Token] MemoryList IO(Token)
 literal_values =  do
-                    intToken <|> floatToken <|> stringToken <|> literal_from_array
+                    intToken <|> floatToken <|> stringToken
 
 literal_from_name :: ParsecT [Token] MemoryList IO Token
 literal_from_name = do
@@ -35,6 +35,15 @@ literal_from_name = do
   --   return $ (get_value_cell . fst) result
   -- else fail "Variável não encontrada"
 
+literal_from_array_at_index :: ParsecT [Token] MemoryList IO Token
+literal_from_array_at_index = do
+  idT <- idToken
+  bS <- bracketSequence
+  s <- getState
+  case symtable_search_array idT s of
+    Left err -> fail "err"
+    Right (MemoryArray id typeArr dim arr) -> return $ arr !! arrayIndex dim (tokensToInts (fst bS))
+
 literal_from_array :: ParsecT [Token] MemoryList IO Token
 literal_from_array = do
   idT <- idToken
@@ -43,6 +52,7 @@ literal_from_array = do
   case symtable_search_array idT s of
     Left err -> fail "err"
     Right (MemoryArray id typeArr dim arr) -> return $ Matrix typeArr dim arr
+
 
 -- literal_from_array:: ParsecT [Token] MemoryList IO(Token)
 -- literal_from_array =  do
@@ -53,7 +63,7 @@ literal_from_array = do
 
 bin_expression :: ParsecT [Token] MemoryList IO(Token)
 bin_expression = do
-                   n1 <- intToken <|> floatToken <|> stringToken <|> literal_from_name
+                   n1 <- intToken <|> floatToken <|> stringToken <|> try literal_from_array_at_index  <|> literal_from_name
                    eval_remaining n1
 
 bracketSequence :: ParsecT [Token] MemoryList IO([Token], [Token])
@@ -70,7 +80,7 @@ remainingBracketSequence = (do bracketSequence) <|> return ([], [])
 bracketWithNumber :: ParsecT [Token] MemoryList IO([Token], [Token])
 bracketWithNumber = do
   lB <- leftSquareBracketToken
-  iT <- intToken
+  iT <- intToken <|> literal_from_name
   rB <- rightSquareBracketToken
 
   return ([iT], [lB, iT, rB])
@@ -78,7 +88,7 @@ bracketWithNumber = do
 eval_remaining :: Token -> ParsecT [Token] MemoryList IO(Token)
 eval_remaining n1 = do
                       op <- addToken <|> subToken <|> multToken
-                      n2 <- intToken <|> floatToken <|> stringToken <|> literal_from_name
+                      n2 <- intToken <|> floatToken <|> stringToken <|> try literal_from_array_at_index  <|> literal_from_name
                       eval_remaining (eval n1 op n2)
                     <|> return n1
 

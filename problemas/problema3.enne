@@ -1,31 +1,36 @@
 -- Leitura de valores
-
+-- m1[2][2]
+-- m2[2][2]
 println("Linhas da 1a matriz");
-int tamanho1Linha = 0;
+int tamanho1Linha = read(int);
     
 println("Colunas da 1a matriz");
-int tamanho1Coluna  = 0;
+int tamanho1Coluna = read(int);
 
 println("Linhas da 2a matriz");
-int tamanho2Linha = 0;
+int tamanho2Linha = read(int);
     
 println("Colunas da 2a matriz");
-int tamanho2Coluna  = 0;
+int tamanho2Coluna  = read(int);
 
 int matrizUm[tamanho1Linha][tamanho1Coluna];
 int matrizDois[tamanho2Linha][tamanho2Coluna];
 
 -- Leitura primeira matriz
-for(int i = 0; i < tamanho1Linha; i = i + 1) {
-    for(int j = 0; j < tamanho1Coluna; j = j + 1) {
-        matrizUm[i][j] = input(int);
+int i = 0;
+int j = 0;
+int k = 0;
+
+for(i = 0; i < tamanho1Linha; i = i + 1) {
+    for(j = 0; j < tamanho1Coluna; j = j + 1) {
+        matrizUm[i][j] = read(int);
     }
 }
 
 -- Leitura segunda matriz
-for(int i = 0; i < tamanho1Linha; i = i + 1) {
-    for(int j = 0; j < tamanho1Coluna; j = j + 1) {
-        matrizDois[i][j] = input(int);
+for(i = 0; i < tamanho1Linha; i = i + 1) {
+    for(j = 0; j < tamanho1Coluna; j = j + 1) {
+        matrizDois[i][j] = read(int);
     }
 }
 
@@ -34,11 +39,9 @@ for(int i = 0; i < tamanho1Linha; i = i + 1) {
 if(tamanho1Linha == tamanho2Linha && tamanho1Coluna == tamanho2Coluna) {
     println("Soma das matrizes");
 
-    int matrizSoma[tamanho1Linha][tamanho1Coluna] = matrizUm + matrizDois;
-
-    for(int i = 0; i < tamanho1Linha; i = i + 1) {
-        for(int j = 0; j < tamanho1Coluna; j = j + 1) {
-            print(matrizSoma[i][j]);
+    for(i = 0; i < tamanho1Linha; i = i + 1) {
+        for(j = 0; j < tamanho1Coluna; j = j + 1) {
+            println(matrizUm[i][j] + matrizDois[i][j]);
         }
     }
 } else {
@@ -48,23 +51,25 @@ if(tamanho1Linha == tamanho2Linha && tamanho1Coluna == tamanho2Coluna) {
 if(tamanho1Coluna == tamanho2Linha) {
     int matrizMultiplicacao[tamanho1Linha][tamanho2Coluna];
 
+    i = 0;
+    j = 0;
+
     -- Realiza a multiplicação
-    for(int i = 0; i < tamanho1Linha; i = i + 1) {
-        for(int j = 0; j < tamanho2Coluna; j = j + 1) {
+    println("Multiplicacao das matrizes");
+    for(i = 0; i < tamanho1Linha; i = i + 1) {
+        for(j = 0; j < tamanho2Coluna; j = j + 1) {
             matrizMultiplicacao[i][j] = 0;
-            for(int k = 0; k < tamanho2Linha; k = k + 1) {
-                matrizMultiplicacao[i][j] = a[i][k] * b[k][j] + matrizMultiplicacao[i][j];
+            for(k = 0; k < tamanho2Linha; k = k + 1) {
+                print("novaMatriz[");
+                print(i);
+                print("][");
+                print(j);
+                print("] = ");
+                print(matrizUm[i][k] * matrizDois[k][j] + matrizMultiplicacao[i][j]);
+                println(" ");
             }
         }
     }
-
-    println("Multiplicacao das matrizes");
-    for(int i = 0; i < tamanho1Linha; i = i + 1) {
-        for(int j = 0; j < tamanho2Coluna; j = j + 1) {
-            print(matrizMultiplicacao[i][j]);
-        }
-    }
-
 } else {
-    println("As matrizes informadas nao podem ser multiplicadas. Tente novamente com duas matrizes do mesmo tamanho.");
+    println("As matrizes informadas nao podem ser multiplicadas. Tente novamente com duas matrizes do a coluna da primeira sendo igual a linha da segunda.");
 }

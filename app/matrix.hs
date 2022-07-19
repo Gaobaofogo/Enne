@@ -31,6 +31,7 @@ arrayIndex (d:dimensions) (s:selectedBrackets) = (s * product dimensions) + arra
 
 -- A função abaixo não verifica se a posição está dentro do tamanho do array
 arrayReplace :: [a] -> Int -> a -> [a]
+arrayReplace [] _ _       = []
 arrayReplace (x:xs) 0 y   = y : xs
 arrayReplace (x:xs) pos y = x : arrayReplace xs (pos - 1) y
 

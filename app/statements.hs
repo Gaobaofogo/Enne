@@ -47,8 +47,6 @@ attributionDeclaration = do
         Right newState -> updateState (const newState)
     else fail "Tipos não são compatíveis"
 
-  s <- getState
-
   return [tT, idT, aT, e]
 
 reattribution :: ParsecT [Token] MemoryList IO[Token]
@@ -82,9 +80,6 @@ arrayDeclaration = do
   case symtable_insert newArray actualState of
     Left errorMsg -> fail errorMsg
     Right newState -> updateState (const newState)
-
-  s <- getState
-  liftIO (print s)
 
   return $ [tT, idT] ++ snd bS
 
@@ -212,17 +207,50 @@ whileStatement = do
 
 forStatement :: ParsecT [Token] MemoryList IO[Token]
 forStatement = do
+  z <- getInput
+
   fT <- forToken
   lP <- leftParenthesisToken
   iS <- attribution
   iST <- semiColonToken
   le <- logicExpression
-  sST <- semiColonToken
-  sS <- attribution
-  rP <- rightParenthesisToken
-  bS <- blockStatement
+  if tokenToBool (head le)
+    then updateState (symtableUpdateFlag 1)
+  else updateState (symtableUpdateFlag 0)
+  s1 <- getState
 
-  return ([fT, lP] ++ iS ++ [iST] ++ le ++ [sST] ++ sS ++ [rP] ++ bS)
+  y <- getState
+  if canOperate y then
+    do
+      let flag = head s1
+      sST <- semiColonToken
+      updateState (symtableUpdateFlag 0)
+      sS <- attribution
+      updateState $ symtableUpdateFlag $ get_int_from_token $ get_value_cell flag
+      rP <- rightParenthesisToken
+      bS <- blockStatement
+      if canOperate y then
+        updateState $ symtable_update (MemoryCell (sS!!0) (sS!!2))
+      else updateState $ symtableUpdateFlag 0
+      setInput z
+      updateState $ symtableUpdateFlag 0 -- para não executar o assign e justAssign a cada intereção
+      aaaaaa <- forStatement
+      return ([fT, lP] ++ iS ++ [iST] ++ le ++ [sST] ++ sS ++ [rP] ++ bS)
+  else
+    do
+      let flag = head s1
+      sST <- semiColonToken
+      updateState (symtableUpdateFlag 0)
+      sS <- attribution
+      updateState $ symtableUpdateFlag $ get_int_from_token $ get_value_cell flag
+      rP <- rightParenthesisToken
+      bS <- blockStatement
+      if canOperate y then
+        updateState $ symtable_update (MemoryCell (sS!!0) (sS!!2))
+      else updateState $ symtableUpdateFlag 0
+      updateState (symtableUpdateFlag 1)
+      -- updateState $ symtableUpdateFlag $ get_int_from_token $ get_value_cell firstFlag
+      return ([fT, lP] ++ iS ++ [iST] ++ le ++ [sST] ++ sS ++ [rP] ++ bS)
 
 funcStatement :: ParsecT [Token] MemoryList IO[Token]
 funcStatement = do
@@ -261,7 +289,6 @@ singleArgumentStatement = do
 
 blockStatement :: ParsecT [Token] MemoryList IO[Token]
 blockStatement = do
-
   lb <- leftBlockToken
   stmts <- statements <|> return []
   rb <- rightBlockToken
