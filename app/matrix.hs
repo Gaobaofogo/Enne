@@ -7,7 +7,6 @@ import Memory
 import Token
 import GHC.Float (int2Double)
 
-
 array_sum :: [Token] -> [Token] -> [Token]
 array_sum [] []                         = []
 array_sum ((Int x):xs) ((Int y):ys)     = Int (x + y)   : array_sum xs ys

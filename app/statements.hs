@@ -2,7 +2,6 @@
 {-# HLINT ignore "Use camelCase" #-}
 module Statement where
 
-
 import Lexer
 import Token
 import Memory
@@ -108,9 +107,9 @@ arrayAttribution = do
 printStatement :: ParsecT [Token] MemoryList IO[Token]
 printStatement = do
   pT <- printToken
-  lp <- leftParentesisToken
+  lp <- leftParenthesisToken
   eX <- expression
-  rp <- rightParentesisToken
+  rp <- rightParenthesisToken
   sT <- semiColonToken
 
   s <- getState
@@ -123,9 +122,9 @@ printStatement = do
 readStatement ::  ParsecT [Token] MemoryList IO(Token)
 readStatement = do
   rT <- readToken
-  lP <- leftParentesisToken
+  lP <- leftParenthesisToken
   tT <- typeToken
-  rP <- rightParentesisToken
+  rP <- rightParenthesisToken
 
   actualState <- getState
   if canOperate actualState then
@@ -137,9 +136,9 @@ readStatement = do
 ifStatement :: ParsecT [Token] MemoryList IO[Token]
 ifStatement = do
   ifT <- ifToken
-  lp <- leftParentesisToken
+  lp <- leftParenthesisToken
   le <- logicExpression
-  rp <- rightParentesisToken
+  rp <- rightParenthesisToken
 
 
   s1 <- getState
@@ -174,9 +173,9 @@ whileStatement :: ParsecT [Token] MemoryList IO[Token]
 whileStatement = do
   z <- getInput
   wT <- whileToken
-  lP <- leftParentesisToken
+  lP <- leftParenthesisToken
   le <- logicExpression
-  rP <- rightParentesisToken
+  rP <- rightParenthesisToken
 
   s1 <- getState
   if tokenToBool (head le)
@@ -199,13 +198,13 @@ whileStatement = do
 forStatement :: ParsecT [Token] MemoryList IO[Token]
 forStatement = do
   fT <- forToken
-  lP <- leftParentesisToken
+  lP <- leftParenthesisToken
   iS <- attribution
   iST <- semiColonToken
   le <- logicExpression
   sST <- semiColonToken
   sS <- attribution
-  rP <- rightParentesisToken
+  rP <- rightParenthesisToken
   bS <- blockStatement
 
   return ([fT, lP] ++ iS ++ [iST] ++ le ++ [sST] ++ sS ++ [rP] ++ bS)
@@ -214,9 +213,9 @@ funcStatement :: ParsecT [Token] MemoryList IO[Token]
 funcStatement = do
   fS <- funcToken
   iT <- idToken
-  lP <- leftParentesisToken
+  lP <- leftParenthesisToken
   fA <- funcArgumentsStatement
-  rP <- rightParentesisToken
+  rP <- rightParenthesisToken
   cT <- colonToken
   tT <- typeToken
   bS <- blockStatement
@@ -227,7 +226,7 @@ funcArgumentsStatement :: ParsecT [Token] MemoryList IO[Token]
 funcArgumentsStatement = do
   first <- singleArgumentStatement <|> return []
   next <- remainingFuncArgumentsStatement
-  
+
   return (first ++ next) <|> return []
 
 remainingFuncArgumentsStatement :: ParsecT [Token] MemoryList IO[Token]

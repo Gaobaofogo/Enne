@@ -6,6 +6,9 @@ import Lexer
 import Text.Parsec
 import Data.Functor.Identity
 
+update_pos pos _ (tok:_) = pos -- needs improvement
+update_pos pos _ []      = pos
+
 get_data_from_token :: Token -> String
 get_data_from_token (Int x)    = show x
 get_data_from_token (Float y)  = show y
@@ -58,13 +61,13 @@ funcToken = tokenPrim show update_pos get_token where
     get_token Func = Just Func
     get_token _    = Nothing
 
-leftParentesisToken :: ParsecT [Token] st IO Token
-leftParentesisToken = tokenPrim show update_pos get_token where
+leftParenthesisToken :: ParsecT [Token] st IO Token
+leftParenthesisToken = tokenPrim show update_pos get_token where
     get_token (Parenthesis "(") = Just (Parenthesis "(")
     get_token _                 = Nothing
 
-rightParentesisToken :: ParsecT [Token] st IO Token
-rightParentesisToken = tokenPrim show update_pos get_token where
+rightParenthesisToken :: ParsecT [Token] st IO Token
+rightParenthesisToken = tokenPrim show update_pos get_token where
     get_token (Parenthesis ")") = Just (Parenthesis ")")
     get_token _                 = Nothing
 
@@ -88,12 +91,12 @@ rightSquareBracketToken = tokenPrim show update_pos get_token where
     get_token (Block "]") = Just (Block "]")
     get_token _           = Nothing
 
-floatToken :: ParsecT [Token] st IO (Token)
+floatToken :: ParsecT [Token] st IO Token
 floatToken = tokenPrim show update_pos get_token where
     get_token (Float x) = Just (Float x)
     get_token _         = Nothing
 
-intToken :: ParsecT [Token] st IO (Token)
+intToken :: ParsecT [Token] st IO Token
 intToken = tokenPrim show update_pos get_token where
     get_token (Int x) = Just (Int x)
     get_token _       = Nothing
@@ -105,17 +108,17 @@ booleanToken = tokenPrim show update_pos get_token where
 
 addToken :: ParsecT [Token] u IO Token
 addToken = tokenPrim show update_pos get_token where
-    get_token (Add) = Just (Add)
+    get_token Add = Just Add
     get_token _      = Nothing
 
 subToken :: ParsecT [Token] u IO Token
 subToken = tokenPrim show update_pos get_token where
-    get_token (Sub) = Just (Sub)
+    get_token Sub = Just Sub
     get_token _      = Nothing
 
 multToken :: ParsecT [Token] u IO Token
 multToken = tokenPrim show update_pos get_token where
-    get_token (Mult) = Just (Mult)
+    get_token Mult = Just Mult
     get_token _      = Nothing
 
 stringToken :: ParsecT [Token] u IO Token
@@ -130,52 +133,52 @@ typeToken = tokenPrim show update_pos get_token where
 
 semiColonToken :: ParsecT [Token] u IO Token
 semiColonToken = tokenPrim show update_pos get_token where
-    get_token (SemiColon) = Just (SemiColon)
+    get_token SemiColon = Just SemiColon
     get_token _        = Nothing
 
 colonToken :: ParsecT [Token] u IO Token
 colonToken = tokenPrim show update_pos get_token where
-    get_token (Colon) = Just (Colon)
+    get_token Colon = Just Colon
     get_token _        = Nothing
 
 commaToken :: ParsecT [Token] u IO Token
 commaToken = tokenPrim show update_pos get_token where
-    get_token (Comma) = Just (Comma)
+    get_token Comma = Just Comma
     get_token _        = Nothing
 
 assignToken :: ParsecT [Token] u IO Token
 assignToken = tokenPrim show update_pos get_token where
-    get_token (Assign) = Just (Assign)
+    get_token Assign = Just Assign
     get_token _        = Nothing
 
 greaterToken :: ParsecT [Token] u IO Token
 greaterToken = tokenPrim show update_pos get_token where
-    get_token (Greater) = Just (Greater)
+    get_token Greater = Just Greater
     get_token _         = Nothing
 
 greaterOrEqualToken :: ParsecT [Token] u IO Token
 greaterOrEqualToken = tokenPrim show update_pos get_token where
-    get_token (GreaterOrEqual) = Just (GreaterOrEqual)
+    get_token GreaterOrEqual = Just GreaterOrEqual
     get_token _                = Nothing
 
 lowerToken :: ParsecT [Token] u IO Token
 lowerToken = tokenPrim show update_pos get_token where
-    get_token (Lower) = Just (Lower)
+    get_token Lower = Just Lower
     get_token _        = Nothing
 
 lowerOrEqualToken :: ParsecT [Token] u IO Token
 lowerOrEqualToken = tokenPrim show update_pos get_token where
-    get_token (LowerOrEqual) = Just (LowerOrEqual)
+    get_token LowerOrEqual = Just LowerOrEqual
     get_token _              = Nothing
 
 equalToToken :: ParsecT [Token] u IO Token
 equalToToken = tokenPrim show update_pos get_token where
-    get_token (EqualTo) = Just (EqualTo)
+    get_token EqualTo = Just EqualTo
     get_token _         = Nothing
 
 notEqualToToken :: ParsecT [Token] u IO Token
 notEqualToToken = tokenPrim show update_pos get_token where
-    get_token (NotEqualTo) = Just (NotEqualTo)
+    get_token NotEqualTo = Just NotEqualTo
     get_token _            = Nothing
 
 logicalOpToken :: ParsecT [Token] u IO Token
