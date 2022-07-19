@@ -1,7 +1,7 @@
 # Enne
 
 <p align="center">
-  <img src="https://github.com/Gaobaofogo/Enne/blob/main/docs/img/timbu.png">
+  <img src="https://github.com/Gaobaofogo/Enne/blob/main/docs/imgs/enne.png">
 </p>
 
 Linguagem de script interpretada.
