@@ -1,7 +1,7 @@
 # Enne
 
 <p align="center">
-  <img src="https://github.com/Gaobaofogo/Enne/blob/main/docs/imgs/enne.png" width="700">
+  <img src="https://github.com/Gaobaofogo/Enne/blob/main/docs/img/enne.png" width="700">
 </p>
 
 ## Buildando o projeto
