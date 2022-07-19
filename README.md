@@ -1,10 +1,8 @@
 # Enne
 
 <p align="center">
-  <img src="https://github.com/Gaobaofogo/Enne/blob/main/docs/imgs/enne.png">
+  <img src="https://github.com/Gaobaofogo/Enne/blob/main/docs/imgs/enne.png" width="700">
 </p>
-
-Linguagem de script interpretada.
 
 ## Buildando o projeto
 
