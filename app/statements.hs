@@ -150,7 +150,6 @@ ifStatement = do
   le <- logicExpression
   rp <- rightParenthesisToken
 
-
   s1 <- getState
   let flag = head s1
 
@@ -249,7 +248,6 @@ forStatement = do
         updateState $ symtable_update (MemoryCell (sS!!0) (sS!!2))
       else updateState $ symtableUpdateFlag 0
       updateState (symtableUpdateFlag 1)
-      -- updateState $ symtableUpdateFlag $ get_int_from_token $ get_value_cell firstFlag
       return ([fT, lP] ++ iS ++ [iST] ++ le ++ [sST] ++ sS ++ [rP] ++ bS)
 
 funcStatement :: ParsecT [Token] MemoryList IO[Token]

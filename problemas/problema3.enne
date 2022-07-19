@@ -1,6 +1,4 @@
 -- Leitura de valores
--- m1[2][2]
--- m2[2][2]
 println("Linhas da 1a matriz");
 int tamanho1Linha = read(int);
     
@@ -35,7 +33,6 @@ for(i = 0; i < tamanho1Linha; i = i + 1) {
 }
 
 -- Output
-
 if(tamanho1Linha == tamanho2Linha && tamanho1Coluna == tamanho2Coluna) {
     println("Soma das matrizes");
 

@@ -14,11 +14,6 @@ array_sum ((Float x):xs) ((Float y):ys) = Float (x + y) : array_sum xs ys
 array_sum ((Int x):xs) ((Float y):ys)   = Float (int2Double x + y) : array_sum xs ys
 array_sum ((Float x):xs) ((Int y):ys)   = Float (x + int2Double y) : array_sum xs ys
 
--- array_diff :: MemoryCell -> MemoryCell -> [Token]
--- array_diff (MemoryArray _ _ _ arr1) (MemoryArray _ _ _ arr2) = array_diff_aux arr1 arr2 where
---   array_diff_aux [] []         = []
---   array_diff_aux (x:xs) (y:ys) = x - y : array_diff_aux xs ys
-
 update_array_at_index :: MemoryCell -> [Token] -> Token -> MemoryCell
 update_array_at_index arrayFound bS e = MemoryArray (get_id_array arrayFound) (get_type_array arrayFound) (get_dimensions_array arrayFound) newArray where
   index    = arrayIndex (get_dimensions_array arrayFound) (tokensToInts bS)

@@ -25,7 +25,6 @@ while(leitura >= 0) {
 }
 
 -- Imprime resultados
-
 println("===================");
 println("Primeiro intervalo:");
 println(primeiroQuarto);

@@ -6,7 +6,7 @@ import Lexer
 import Text.Parsec
 import Data.Functor.Identity
 
-update_pos pos _ (tok:_) = pos -- needs improvement
+update_pos pos _ (tok:_) = pos
 update_pos pos _ []      = pos
 
 get_data_from_token :: Token -> String

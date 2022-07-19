@@ -31,9 +31,6 @@ literal_from_name = do
                 MemoryCell id1 value -> value
                 MemoryArray id2 t2 d2 arr2 -> Matrix t2 d2 arr2
   else fail "Variável não encontrada"
-  -- if snd result then
-  --   return $ (get_value_cell . fst) result
-  -- else fail "Variável não encontrada"
 
 literal_from_array_at_index :: ParsecT [Token] MemoryList IO Token
 literal_from_array_at_index = do
@@ -52,14 +49,6 @@ literal_from_array = do
   case symtable_search_array idT s of
     Left err -> fail "err"
     Right (MemoryArray id typeArr dim arr) -> return $ Matrix typeArr dim arr
-
-
--- literal_from_array:: ParsecT [Token] MemoryList IO(Token)
--- literal_from_array =  do
---                     a <- idToken
---                     b <- positionSequence
---                     s1 <- getState
---                     return (fromTypeX ( fst (symtableArraySearch s1 (getIndexes b []) (getVariableName a) "" ))) 
 
 bin_expression :: ParsecT [Token] MemoryList IO(Token)
 bin_expression = do
@@ -127,19 +116,7 @@ eval (Int x)    Mult  (Float y) = Float (fromIntegral x * y)
 eval (String x) Add   (String y)= String (x ++ y)
 eval (Matrix t1 dim1 arr1) Add (Matrix t2 dim2 arr2) = Matrix t1 dim1 (array_sum arr1 arr2)
 
-{-
-Aqui eu posso colocar no eval mais uma linha e retornar um 
-"token" de matrix, mas não faz sentido ser um token de matrix.
-Como eu vou saber que eu tô fazendo soma de matrizes? Porra.
-Tá, talvez eu possa colocar um token novo de matrix com as
-dimensoes e os valores. O que vai dar? Eu vou ter dois
-literal_from_array e literal_from_array_index.
-O primeiro vai devolver o valor da matrix acima descrito
-e o segundo eu vou pegar o valor no índice igual o timbux.
--}
-
--- boolean expressions
-
+-- Boolean expressions
 logicExpression :: ParsecT [Token] MemoryList IO([Token])
 logicExpression = do
     a <- floatToken <|> intToken <|> expression <|> booleanToken
@@ -198,5 +175,3 @@ logicComparative (Int x) NotEqualTo (Int y) = x /= y
 logicComparative (Float x) NotEqualTo (Float y) = x /= y
 logicComparative (Int x) NotEqualTo (Float y) = fromIntegral x /= y
 logicComparative (Float x) NotEqualTo (Int y) = x /= fromIntegral y
--- logicComparative (Boolean x) EqualTo (Boolean y) = stringToBool x == stringToBool y
--- logicComparative (Boolean x) NotEqualTo (Boolean y) = stringToBool x /= stringToBool y
