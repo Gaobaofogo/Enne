@@ -3,4 +3,4 @@ float y = 3;
 int c = 1;
 
 -- Realiza a equação na função de impressão
-print(x*x - y + c);
+println(x*x - y + c);

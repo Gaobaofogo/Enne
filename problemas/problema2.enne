@@ -26,18 +26,18 @@ while(leitura >= 0) {
 
 -- Imprime resultados
 
-print("===================");
-print("Primeiro intervalo:");
-print(primeiroQuarto);
+println("===================");
+println("Primeiro intervalo:");
+println(primeiroQuarto);
 
-print("===================");
-print("Segundo intervalo:");
-print(segundoQuarto);
+println("===================");
+println("Segundo intervalo:");
+println(segundoQuarto);
 
-print("===================");
-print("Terceiro intervalo:");
-print(terceiroQuarto);
+println("===================");
+println("Terceiro intervalo:");
+println(terceiroQuarto);
 
-print("===================");
-print("Quarto intervalo:");
-print(quartoQuarto);
+println("===================");
+println("Quarto intervalo:");
+println(quartoQuarto);

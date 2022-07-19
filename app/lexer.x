@@ -44,6 +44,7 @@ tokens :-
   "-"                                    { \s -> Sub }
   "*"                                    { \s -> Mult }
   print                                  { \s -> Print }
+  println                                { \s -> Println }
   read                                   { \s -> Read }
   if                                     { \s -> If }
   else                                   { \s -> Else }
@@ -73,6 +74,7 @@ data Token =
   Comma                     |
   Assign                    |     
   Print                     |
+  Println                   |
   Read                      |
   If                        |
   Else                      |

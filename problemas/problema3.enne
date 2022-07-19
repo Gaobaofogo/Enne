@@ -1,38 +1,70 @@
 -- Leitura de valores
 
-print("Linhas da 1a matriz");
-int tamanho1X = 0;
+println("Linhas da 1a matriz");
+int tamanho1Linha = 0;
     
-print("Colunas da 1a matriz");
-int tamanho1Y  = 0;
+println("Colunas da 1a matriz");
+int tamanho1Coluna  = 0;
 
-print("Linhas da 2a matriz");
-int tamanho2X = 0;
+println("Linhas da 2a matriz");
+int tamanho2Linha = 0;
     
-print("Colunas da 2a matriz");
-int tamanho2Y  = 0;
+println("Colunas da 2a matriz");
+int tamanho2Coluna  = 0;
 
-int matrizUm[tamanho1X][tamanho1Y];
-int matrizDois[tamanho2X][tamanho2Y];
+int matrizUm[tamanho1Linha][tamanho1Coluna];
+int matrizDois[tamanho2Linha][tamanho2Coluna];
 
 -- Leitura primeira matriz
-for(int i = 0; i < tamanho1X; i = i + 1) {
-    for(int j = 0; j < tamanho1Y; j = j + 1) {
+for(int i = 0; i < tamanho1Linha; i = i + 1) {
+    for(int j = 0; j < tamanho1Coluna; j = j + 1) {
         matrizUm[i][j] = input(int);
     }
 }
 
 -- Leitura segunda matriz
-for(int i = 0; i < tamanho1X; i = i + 1) {
-    for(int j = 0; j < tamanho1Y; j = j + 1) {
+for(int i = 0; i < tamanho1Linha; i = i + 1) {
+    for(int j = 0; j < tamanho1Coluna; j = j + 1) {
         matrizDois[i][j] = input(int);
     }
 }
 
 -- Output
 
-print("Soma das matrizes");
-print(matrizUm + matrizDois);
+if(tamanho1Linha == tamanho2Linha && tamanho1Coluna == tamanho2Coluna) {
+    println("Soma das matrizes");
 
-print("Multiplicação das matrizes");
-print(matrizUm * matrizDois);
+    int matrizSoma[tamanho1Linha][tamanho1Coluna] = matrizUm + matrizDois;
+
+    for(int i = 0; i < tamanho1Linha; i = i + 1) {
+        for(int j = 0; j < tamanho1Coluna; j = j + 1) {
+            print(matrizSoma[i][j]);
+        }
+    }
+} else {
+    println("As matrizes informadas nao podem ser somadas. Tente novamente com duas matrizes do mesmo tamanho.");
+}
+
+if(tamanho1Coluna == tamanho2Linha) {
+    int matrizMultiplicacao[tamanho1Linha][tamanho2Coluna];
+
+    -- Realiza a multiplicação
+    for(int i = 0; i < tamanho1Linha; i = i + 1) {
+        for(int j = 0; j < tamanho2Coluna; j = j + 1) {
+            matrizMultiplicacao[i][j] = 0;
+            for(int k = 0; k < tamanho2Linha; k = k + 1) {
+                matrizMultiplicacao[i][j] = a[i][k] * b[k][j] + matrizMultiplicacao[i][j];
+            }
+        }
+    }
+
+    println("Multiplicacao das matrizes");
+    for(int i = 0; i < tamanho1Linha; i = i + 1) {
+        for(int j = 0; j < tamanho2Coluna; j = j + 1) {
+            print(matrizMultiplicacao[i][j]);
+        }
+    }
+
+} else {
+    println("As matrizes informadas nao podem ser multiplicadas. Tente novamente com duas matrizes do mesmo tamanho.");
+}

@@ -15,7 +15,7 @@ import Control.Monad
 
 statements :: ParsecT [Token] MemoryList IO [Token]
 statements = do
-  first <- attributionSemiColon <|> ifStatement <|> whileStatement <|> funcStatement <|> forStatement <|> printStatement
+  first <- attributionSemiColon <|> ifStatement <|> whileStatement <|> funcStatement <|> forStatement <|> printlnStatement <|> printStatement
   next  <- remaining_stmts
   return (first ++ next) <|> return []
 
@@ -104,6 +104,21 @@ arrayAttribution = do
 
   return $ [idT] ++ snd bS ++ [aT, e]
 
+printlnStatement :: ParsecT [Token] MemoryList IO[Token]
+printlnStatement = do
+  pT <- printlnToken
+  lp <- leftParenthesisToken
+  eX <- expression
+  rp <- rightParenthesisToken
+  sT <- semiColonToken
+
+  s <- getState
+  if canOperate s then
+    liftIO $ putStrLn $ get_data_from_token eX
+  else updateState (symtableUpdateFlag 0)
+
+  return [pT, lp, eX, rp, sT]
+
 printStatement :: ParsecT [Token] MemoryList IO[Token]
 printStatement = do
   pT <- printToken
@@ -114,7 +129,7 @@ printStatement = do
 
   s <- getState
   if canOperate s then
-    liftIO $ putStrLn $ get_data_from_token eX
+    liftIO $ putStr $ get_data_from_token eX
   else updateState (symtableUpdateFlag 0)
 
   return [pT, lp, eX, rp, sT]

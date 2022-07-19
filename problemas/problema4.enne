@@ -49,64 +49,64 @@ func div(rational_t first, rational_t second) : rational_t {
     return mul(first, inv(second));
 }
 
--- Lê os números
-print("Primeiro número:");
+-- Lê os numeros
+println("Primeiro numero:");
 float enne = read(float);
 
-print("Segundo número:");
+println("Segundo numero:");
 float emme = read(float);
 
--- Impressão dos resultados
+-- Impressao dos resultados
 if(emme != 0) {
-    print("Transformação em racional:");
+    println("Transformacao em racional:");
     rational_t numero = toRational(enne, emme);
-    print(numero.numerador);
-    print("----");
-    print(numero.denominador);
-    print("");
+    println(numero.numerador);
+    println("----");
+    println(numero.denominador);
+    println("");
 
-    print("Inverso de número racional:");
+    println("Inverso de numero racional:");
     rational_t numeroinverso = inv(numero);
-    print(numeroinverso.numerador);
-    print("----");
-    print(numeroinverso.denominador);
-    print("");
+    println(numeroinverso.numerador);
+    println("----");
+    println(numeroinverso.denominador);
+    println("");
 
-    print("Negação de número racional:");
+    println("Negacao de numero racional:");
     rational_t numeronegado = neg(numero);
-    print(numeronegado.numerador);
-    print("----");
-    print(numeronegado.denominador);
-    print("");
+    println(numeronegado.numerador);
+    println("----");
+    println(numeronegado.denominador);
+    println("");
 
-    print("Comparação de números racionais com (4/5):");
+    println("Comparacao de numeros racionais com (4/5):");
     rational_t comparacao = rational_t(4, 5);
     if(equals(numero, comparacao)) {
-        print("São iguais!");
+        println("Sao iguais!");
     } else {
-        print("São diferentes!");
+        println("Sao diferentes!");
     }
-    print("");
+    println("");
 
-    print("Adição de números racionais com (4/5):");
+    println("Adicao de numeros racionais com (4/5):");
     rational_t numeroadicao = add(numero, comparacao);
-    print(numeroadicao);
-    print("");
+    println(numeroadicao);
+    println("");
 
-    print("Subtração de números racionais com (4/5):");
+    println("Subtracao de numeros racionais com (4/5):");
     rational_t numerosubtracao = sub(numero, comparacao);
-    print(numerosubtracao);
-    print("");
+    println(numerosubtracao);
+    println("");
 
-    print("Multiplicação de números racionais com (4/5):");
+    println("Multiplicacao de numeros racionais com (4/5):");
     rational_t numeromultiplicacao = mul(numero, comparacao);
-    print(numeromultiplicacao);
-    print("");
+    println(numeromultiplicacao);
+    println("");
 
-    print("Divisão de números racionais com (4/5):");
+    println("Divisao de numeros racionais com (4/5):");
     rational_t numerodivisao = div(numero, comparacao);
-    print(numerodivisao);
+    println(numerodivisao);
 
 } else {
-    print("Erro! Informe um número diferente de 0.");
+    println("Erro! Informe um numero diferente de 0.");
 }
