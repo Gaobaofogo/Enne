@@ -1,6 +1,7 @@
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use camelCase" #-}
 {-# HLINT ignore "Use newtype instead of data" #-}
+{-# OPTIONS_GHC -Wno-incomplete-patterns #-}
 module Memory where
 import Lexer
 import Token
@@ -62,10 +63,10 @@ symtable_update :: MemoryCell -> MemoryList -> MemoryList
 symtable_update _ [] = fail "variable not found"
 symtable_update (MemoryCell (Id id1) v1) ((MemoryCell (Id id2) v2):t) =
                                 if id1 == id2 then MemoryCell (Id id1) v1 : t
-                                else (MemoryCell (Id id2) v2) : symtable_update (MemoryCell (Id id1) v1) t
+                                else MemoryCell (Id id2) v2 : symtable_update (MemoryCell (Id id1) v1) t
 symtable_update (MemoryArray (Id id1) t1 d1 arr1) ((MemoryArray (Id id2) t2 d2 arr2):t) =
-                                if id1 == id2 then (MemoryArray (Id id1) t1 d1 arr1) : t
-                                else (MemoryArray (Id id2) t2 d2 arr2) : symtable_update (MemoryArray (Id id1) t1 d1 arr1) t
+                                if id1 == id2 then MemoryArray (Id id1) t1 d1 arr1 : t
+                                else MemoryArray (Id id2) t2 d2 arr2 : symtable_update (MemoryArray (Id id1) t1 d1 arr1) t
 symtable_update x (y:ys) = y : symtable_update x ys
 
 
@@ -79,4 +80,4 @@ canOperate :: MemoryList -> Bool
 canOperate ((MemoryCell (Id "enneflag") (Int x)):_) = x == 1
 
 symtableUpdateFlag :: Int -> MemoryList -> MemoryList
-symtableUpdateFlag int ((MemoryCell id value):table) = (MemoryCell (Id "enneflag") (Int int)) : table
+symtableUpdateFlag int ((MemoryCell id value):table) = MemoryCell (Id "enneflag") (Int int) : table
