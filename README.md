@@ -17,7 +17,7 @@ Dentro do container, para compilar e rodar o projeto a partir da raiz:
 
 ```
 make
-./main <nome_do_arquivo>.enne
+./main problemas/<nome_do_arquivo>.enne
 ```
 
 Caso não esteja dentro do container, é recomendado usar os passos de instalação a seguir:
