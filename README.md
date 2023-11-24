@@ -45,7 +45,7 @@ Na pasta `~/.vscode/extensions/` clone o repositório abaixo:
 git clone git@github.com:nataly-enne/enne-syntax-highlight.git
 ```
 
-Em seguida, abra e feche o terminal VScode e o plugin irá aplicar automaticamente.
+Em seguida, feche e abra o VScode e o plugin irá aplicar automaticamente.
 
 ## Colaboradores
 <table>
