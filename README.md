@@ -42,7 +42,7 @@ $ alex lexer.x
 Na pasta `~/.vscode/extensions/` clone o repositório abaixo:
 
 ```bash
-git clonegit@github.com:nataly-enne/enne-syntax-highlight.git
+git clone git@github.com:nataly-enne/enne-syntax-highlight.git
 ```
 
 Em seguida, abra e feche o terminal VScode e o plugin irá aplicar automaticamente.
